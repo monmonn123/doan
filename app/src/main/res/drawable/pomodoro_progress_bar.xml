@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Nền mờ của vòng tròn -->
+    <item>
+        <shape
+            android:shape="ring"
+            android:innerRadiusRatio="2.55"
+            android:thicknessRatio="100"
+            android:useLevel="false">
+            <solid android:color="#E0E7FF" /> <!-- Màu xanh pastel nhạt -->
+        </shape>
+    </item>
+    <!-- Lớp tiến trình chạy ngược chiều kim đồng hồ -->
+    <item>
+        <rotate
+            android:fromDegrees="270"
+            android:toDegrees="270"
+            android:pivotX="50%"
+            android:pivotY="50%">
+            <shape
+                android:shape="ring"
+                android:innerRadiusRatio="2.55"
+                android:thicknessRatio="100"
+                android:useLevel="true">
+                <solid android:color="#4ADE80" /> <!-- Màu xanh lá cây dịu mắt -->
+            </shape>
+        </rotate>
+    </item>
+</layer-list>
