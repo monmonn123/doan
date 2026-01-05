@@ -23,7 +23,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     private List<StudentData.Category> mList;
     private Context mContext;
-    private MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer; // Để phát nhạc
 
     public CategoryAdapter(Context context, List<StudentData.Category> list) {
         this.mContext = context;
@@ -46,15 +46,17 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         holder.tvDesc.setText(category.description);
         holder.imgIcon.setImageResource(category.mainIconResId);
 
+        // Đổi màu icon
         if (holder.imgIcon.getBackground() != null) {
             holder.imgIcon.getBackground().mutate().setColorFilter(category.color, PorterDuff.Mode.SRC_IN);
         }
         holder.imgIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
 
+        // Xử lý đóng/mở danh sách con
         if (category.isExpanded) {
             holder.layoutFeatures.setVisibility(View.VISIBLE);
             holder.imgArrow.setRotation(180);
-            holder.layoutFeatures.removeAllViews();
+            holder.layoutFeatures.removeAllViews(); // Xóa view cũ để tránh trùng lặp
 
             for (StudentData.Feature feature : category.featureList) {
                 addFeatureItem(holder.layoutFeatures, feature, category.id);
@@ -70,6 +72,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         });
     }
 
+    // Hàm thêm từng dòng chức năng con
     private void addFeatureItem(LinearLayout container, StudentData.Feature feature, String categoryId) {
         View featureView = LayoutInflater.from(mContext).inflate(R.layout.item_feature, container, false);
 
@@ -81,52 +84,54 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         tvDetail.setText(feature.detail);
         imgIcon.setImageResource(feature.iconResId);
 
+        // --- QUAN TRỌNG: XỬ LÝ SỰ KIỆN BẤM VÀO TỪNG MÓN ---
         featureView.setOnClickListener(v -> {
             if ("focus".equals(categoryId)) {
                 handleFocusFeatures(feature.name);
             } else {
-                Toast.makeText(mContext, "Mở chức năng: " + feature.name, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Chức năng " + feature.name + " đang phát triển", Toast.LENGTH_SHORT).show();
             }
         });
 
         container.addView(featureView);
     }
 
+    // Xử lý riêng cho nhóm Focus
     private void handleFocusFeatures(String featureName) {
         switch (featureName) {
-            case "Chặn App gây nghiện":
+            case "Chặn App": // Khớp với StudentData
                 mContext.startActivity(new Intent(mContext, AppBlockerActivity.class));
                 break;
-            case "Đồng hồ Focus":
+            case "Đồng hồ Focus": // Khớp với StudentData
                 mContext.startActivity(new Intent(mContext, PomodoroActivity.class));
                 break;
-            case "Thống kê tập trung":
-                Toast.makeText(mContext, "Mở biểu đồ thống kê thời gian đã tập trung!", Toast.LENGTH_SHORT).show();
-                break;
-            case "Nhạc White Noise":
+            case "Nhạc thư giãn": // Khớp với StudentData
                 playOrStopMusic();
                 break;
             default:
-                Toast.makeText(mContext, "Mở chức năng: " + featureName, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Đang mở " + featureName, Toast.LENGTH_SHORT).show();
                 break;
         }
     }
 
+    // Logic phát nhạc đơn giản
     private void playOrStopMusic() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
-            Toast.makeText(mContext, "Đã tắt nhạc...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Đã tắt nhạc", Toast.LENGTH_SHORT).show();
         } else {
-            // Bạn cần tự tạo thư mục res/raw và thêm file nhạc vào
-            // mediaPlayer = MediaPlayer.create(mContext, R.raw.rain_sound);
+            // Lưu ý: Bạn cần có file nhạc tên là "rain_sound" trong thư mục res/raw
+            // Nếu chưa có, mình dùng tạm nhạc chuông mặc định để test
+            mediaPlayer = MediaPlayer.create(mContext, android.provider.Settings.System.DEFAULT_RINGTONE_URI);
+
             if (mediaPlayer != null) {
                 mediaPlayer.setLooping(true);
                 mediaPlayer.start();
-                Toast.makeText(mContext, "Đang phát nhạc mưa...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Đang phát nhạc...", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(mContext, "Chưa có file nhạc. Hãy thêm file âm thanh vào res/raw", Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, "Lỗi phát nhạc", Toast.LENGTH_SHORT).show();
             }
         }
     }

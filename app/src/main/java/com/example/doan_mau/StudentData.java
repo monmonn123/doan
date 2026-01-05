@@ -1,4 +1,4 @@
-package com.example.doan_mau; // Đổi theo package của bạn
+package com.example.doan_mau;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,42 +39,40 @@ public class StudentData {
     public static List<Category> getMockData() {
         List<Category> categories = new ArrayList<>();
 
-        // 1. Lịch trình & Điểm danh
+        // 1. Lịch trình & Điểm danh (Dùng icon hệ thống android.R.drawable...)
         List<Feature> scheduleFeatures = new ArrayList<>();
-        scheduleFeatures.add(new Feature("Điểm danh bằng QR", "Quét mã QR để điểm danh vào lớp ngay lập tức.", R.drawable.ic_qr_code));
-        scheduleFeatures.add(new Feature("Lịch học & Deadline", "Xem lịch học, hạn nộp bài tập và nhận nhắc nhở.", R.drawable.ic_access_time));
-        scheduleFeatures.add(new Feature("Đồng bộ Google Calendar", "Tự động đồng bộ lịch cá nhân với lịch trường.", R.drawable.ic_sync));
-        scheduleFeatures.add(new Feature("Widget lịch ngày", "Tiện ích màn hình chính hiển thị lịch trình hôm nay.", R.drawable.ic_widgets));
-        scheduleFeatures.add(new Feature("Lịch sử điểm danh", "Xem lại lịch sử các lần điểm danh đã lưu.", R.drawable.ic_history));
+        scheduleFeatures.add(new Feature("Điểm danh bằng QR", "Quét mã QR để điểm danh vào lớp ngay lập tức.", android.R.drawable.ic_menu_camera));
+        scheduleFeatures.add(new Feature("Lịch học & Deadline", "Xem lịch học, hạn nộp bài tập.", android.R.drawable.ic_menu_my_calendar));
+        scheduleFeatures.add(new Feature("Lịch sử điểm danh", "Xem lại các lần điểm danh.", android.R.drawable.ic_menu_recent_history));
 
-        categories.add(new Category("schedule", "Lịch trình & Điểm danh", "Quản lý thời gian và điểm danh lớp học", 0xFF3B82F6, R.drawable.ic_calendar_today, scheduleFeatures));
+        categories.add(new Category("schedule", "Lịch trình & Điểm danh", "Quản lý thời gian và điểm danh",
+                0xFF3B82F6, android.R.drawable.ic_menu_agenda, scheduleFeatures));
 
-        // 2. Kho Tài liệu & Cộng đồng
+        // 2. Tài liệu (Dùng icon hệ thống)
         List<Feature> docsFeatures = new ArrayList<>();
-        docsFeatures.add(new Feature("Upload tài liệu PDF", "Tải lên giáo trình, bài giảng PDF.", R.drawable.ic_cloud_upload));
-        docsFeatures.add(new Feature("Tìm kiếm theo môn", "Bộ lọc tài liệu thông minh theo mã môn học.", R.drawable.ic_search));
-        docsFeatures.add(new Feature("Bảng xếp hạng tài liệu", "Top tài liệu được tải nhiều nhất tháng.", R.drawable.ic_bar_chart));
-        docsFeatures.add(new Feature("Cộng đồng (Like/Follow)", "Tương tác, bình luận và theo dõi người chia sẻ.", R.drawable.ic_favorite_border));
+        docsFeatures.add(new Feature("Upload tài liệu", "Tải lên giáo trình PDF.", android.R.drawable.ic_menu_upload));
+        docsFeatures.add(new Feature("Tìm kiếm môn học", "Tìm tài liệu theo mã môn.", android.R.drawable.ic_menu_search));
+        docsFeatures.add(new Feature("Cộng đồng", "Chia sẻ tài liệu với bạn bè.", android.R.drawable.star_on));
 
-        categories.add(new Category("documents", "Kho Tài liệu & Cộng đồng", "Chia sẻ và tìm kiếm tài liệu học tập", 0xFF10B981, R.drawable.ic_description, docsFeatures));
+        categories.add(new Category("documents", "Kho Tài liệu", "Chia sẻ và tìm kiếm tài liệu",
+                0xFF10B981, android.R.drawable.ic_menu_sort_by_size, docsFeatures));
 
-        // 3. Trợ lý Học tập AI
+        // 3. Trợ lý AI (Dùng icon hệ thống)
         List<Feature> aiFeatures = new ArrayList<>();
-        aiFeatures.add(new Feature("ChatBot học tập", "Hỏi đáp kiến thức 24/7 với AI.", R.drawable.ic_chat_bubble_outline));
-        aiFeatures.add(new Feature("Scan bài tập", "Chụp ảnh bài tập, AI phân tích và giải thích.", R.drawable.ic_camera_alt));
-        aiFeatures.add(new Feature("Hỗ trợ kế hoạch học", "Lập lộ trình ôn thi cá nhân hóa.", R.drawable.ic_edit_calendar));
-        aiFeatures.add(new Feature("Gợi ý bài tập", "Đề xuất bài luyện tập dựa trên điểm yếu.", R.drawable.ic_lightbulb));
+        aiFeatures.add(new Feature("ChatBot học tập", "Hỏi đáp kiến thức với AI.", android.R.drawable.ic_menu_help));
+        aiFeatures.add(new Feature("Gợi ý bài tập", "Đề xuất bài luyện tập.", android.R.drawable.ic_menu_compass));
 
-        categories.add(new Category("ai", "Trợ lý Học tập AI", "Hỗ trợ giải bài và lên kế hoạch", 0xFFA855F7, R.drawable.ic_psychology, aiFeatures));
+        categories.add(new Category("ai", "Trợ lý AI", "Hỗ trợ giải bài tập",
+                0xFFA855F7, android.R.drawable.ic_menu_view, aiFeatures));
 
-        // 4. Góc Tập trung (Focus)
+        // 4. Focus (Dùng icon hệ thống)
         List<Feature> focusFeatures = new ArrayList<>();
-        focusFeatures.add(new Feature("Chặn App gây nghiện", "Tạm khóa TikTok, Facebook trong giờ học.", R.drawable.ic_app_blocking));
-        focusFeatures.add(new Feature("Đồng hồ Focus", "Pomodoro timer và đo thời gian thực học.", R.drawable.ic_hourglass_top));
-        focusFeatures.add(new Feature("Thống kê tập trung", "Biểu đồ phân tích mức độ tập trung tuần.", R.drawable.ic_analytics));
-        focusFeatures.add(new Feature("Nhạc White Noise", "Phát nhạc Lofi/Mưa rơi giúp tập trung.", R.drawable.ic_music_note));
+        focusFeatures.add(new Feature("Chặn App", "Tạm khóa MXH khi học.", android.R.drawable.ic_delete));
+        focusFeatures.add(new Feature("Đồng hồ Focus", "Đếm ngược thời gian học.", android.R.drawable.ic_lock_idle_alarm));
+        focusFeatures.add(new Feature("Nhạc thư giãn", "Nhạc không lời tập trung.", android.R.drawable.ic_media_play));
 
-        categories.add(new Category("focus", "Góc Tập trung (Focus)", "Công cụ tối ưu hiệu suất học", 0xFFF97316, R.drawable.ic_timer, focusFeatures));
+        categories.add(new Category("focus", "Góc Tập trung", "Công cụ tối ưu hiệu suất",
+                0xFFF97316, android.R.drawable.ic_lock_power_off, focusFeatures));
 
         return categories;
     }

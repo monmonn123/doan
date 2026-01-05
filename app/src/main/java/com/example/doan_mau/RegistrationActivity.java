@@ -49,10 +49,17 @@ public class RegistrationActivity extends AppCompatActivity {
                 String password = edtPassword.getText().toString();
 
                 Intent intent = new Intent(RegistrationActivity.this, ConfirmCodeActivity.class);
+
+                // Đóng gói dữ liệu gửi sang màn hình xác thực
                 intent.putExtra("USER_EMAIL", email);
                 intent.putExtra("USER_PASSWORD", password);
                 intent.putExtra("USER_FULL_NAME", fullName);
                 intent.putExtra("USER_STUDENT_ID", studentId);
+
+                // --- QUAN TRỌNG: Lấy StudentID làm Username gửi cho Server ---
+                intent.putExtra("USER_USERNAME", studentId);
+                // -----------------------------------------------------------
+
                 startActivity(intent);
             }
         });
@@ -98,7 +105,6 @@ public class RegistrationActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Bắt đầu lại video khi quay lại màn hình
         videoBackground.start();
     }
 }

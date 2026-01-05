@@ -7,7 +7,6 @@
     android:background="#F1F5F9"
     tools:context=".MainActivity">
 
-    <!-- Phần nội dung chính có thể cuộn -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
@@ -19,7 +18,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- 1. Thanh AppBar giả (Header) -->
             <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,18 +41,19 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tvWelcomeName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="MyUTE"
+                                android:text="Xin chào, Sinh viên"
                                 android:textColor="#1E293B"
                                 android:textSize="20sp"
                                 android:textStyle="bold" />
 
                             <TextView
-                                android:id="@+id/tvWelcome"
+                                android:id="@+id/tvMssvInfo"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="MyUTE – Xin chào, sinh viên!"
+                                android:text="MSSV: ---"
                                 android:textColor="#64748B"
                                 android:textSize="14sp" />
                         </LinearLayout>
@@ -64,20 +63,19 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="16dp"
-                            android:src="@drawable/ic_search" />
+                            android:src="@drawable/ic_menu_search" />
 
                         <ImageView
                             android:id="@+id/imgNotifications"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="16dp"
-                            android:src="@drawable/ic_notifications" />
+                            android:src="@android:drawable/ic_dialog_email" />
 
                     </LinearLayout>
                 </androidx.appcompat.widget.Toolbar>
             </com.google.android.material.appbar.AppBarLayout>
 
-            <!-- 2. Phần Card thống kê -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -86,7 +84,6 @@
                 android:paddingEnd="16dp"
                 android:paddingBottom="16dp">
 
-                <!-- Card bên trái -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -116,34 +113,9 @@
                             android:textColor="@android:color/white"
                             android:textSize="18sp"
                             android:textStyle="bold" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:background="#2563EB"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:padding="4dp">
-
-                            <ImageView
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
-                                android:src="@drawable/ic_access_time"
-                                app:tint="@android:color/white" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:text="09:30 AM"
-                                android:textColor="@android:color/white"
-                                android:textSize="12sp" />
-                        </LinearLayout>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Card bên phải -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -171,20 +143,10 @@
                             android:textColor="#1E293B"
                             android:textSize="20sp"
                             android:textStyle="bold" />
-
-                        <ProgressBar
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="6dp"
-                            android:layout_marginTop="8dp"
-                            android:progress="70"
-                            android:progressDrawable="@drawable/custom_progress_bar" />
-
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
             </LinearLayout>
 
-            <!-- 3. RecyclerView cho danh sách chức năng -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -194,28 +156,22 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <!-- Đặt RecyclerView vào đúng vị trí -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
-                android:padding="16dp"
-                tools:listitem="@layout/item_category" />
+                android:padding="16dp" />
 
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Thanh BottomAppBar -->
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
-        style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:fabAlignmentMode="center"
-        app:hideOnScroll="true">
+        app:fabAlignmentMode="center">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
@@ -224,15 +180,13 @@
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"
             app:menu="@menu/bottom_nav_menu" />
-
     </com.google.android.material.bottomappbar.BottomAppBar>
 
-    <!-- Nút tròn ở giữa -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_qr_code_scanner"
+        android:src="@android:drawable/ic_input_add"
         app:backgroundTint="#1E293B"
         app:layout_anchor="@id/bottomAppBar"
         app:tint="@android:color/white" />

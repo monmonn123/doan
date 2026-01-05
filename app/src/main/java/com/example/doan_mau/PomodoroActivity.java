@@ -1,65 +1,77 @@
 package com.example.doan_mau;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 public class PomodoroActivity extends AppCompatActivity {
 
-    private static final long START_TIME_IN_MILLIS = TimeUnit.MINUTES.toMillis(25);
-
     private TextView tvTimer;
-    private Button btnStart, btnPause, btnStop;
+    private EditText edtMinutes;
+    private Button btnStart, btnStop;
     private ProgressBar progressBar;
-    private CustomVideoView earthVideoView; // SỬA LỖI: Dùng CustomVideoView
 
     private CountDownTimer countDownTimer;
     private boolean timerRunning;
-    private long timeLeftInMillis = START_TIME_IN_MILLIS;
+    private long mTimeLeftInMillis;
+    private long mStartTimeInMillis; // Tổng thời gian (để tính %)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pomodoro);
 
+        // Ánh xạ View
         tvTimer = findViewById(R.id.tvTimer);
+        edtMinutes = findViewById(R.id.edtMinutes);
         btnStart = findViewById(R.id.btnStart);
-        btnPause = findViewById(R.id.btnPause);
         btnStop = findViewById(R.id.btnStop);
         progressBar = findViewById(R.id.progressBar);
-        earthVideoView = findViewById(R.id.earthVideoView); // SỬA LỖI: Ánh xạ đúng ID
 
-        startEarthVideo();
+        // Nút Bắt đầu
+        btnStart.setOnClickListener(v -> {
+            String input = edtMinutes.getText().toString();
+            if (TextUtils.isEmpty(input)) {
+                Toast.makeText(this, "Nhập số phút đi bạn ơi!", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        btnStart.setOnClickListener(v -> startTimer());
-        btnPause.setOnClickListener(v -> pauseTimer());
-        btnStop.setOnClickListener(v -> resetTimer());
+            long minutes = Long.parseLong(input);
+            if (minutes == 0) {
+                Toast.makeText(this, "Thời gian phải lớn hơn 0", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        updateCountDownText();
-    }
+            // Chuyển phút sang mili giây
+            mStartTimeInMillis = minutes * 60 * 1000;
+            mTimeLeftInMillis = mStartTimeInMillis;
 
-    private void startEarthVideo() {
-        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.earth);
-        earthVideoView.setVideoURI(uri);
-        earthVideoView.setOnPreparedListener(mp -> {
-            mp.setLooping(true);
-            mp.setVolume(0, 0);
+            startTimer();
         });
-        earthVideoView.start();
+
+        // Nút Hủy
+        btnStop.setOnClickListener(v -> resetTimer());
     }
 
     private void startTimer() {
-        countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
+        // Cài đặt thanh Progress Bar
+        // Max là 10000 (để chạy mượt hơn)
+        progressBar.setMax(10000);
+
+        countDownTimer = new CountDownTimer(mTimeLeftInMillis, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                timeLeftInMillis = millisUntilFinished;
+                mTimeLeftInMillis = millisUntilFinished;
                 updateCountDownText();
                 updateProgressBar();
             }
@@ -67,79 +79,57 @@ public class PomodoroActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 timerRunning = false;
+                progressBar.setProgress(0);
+                tvTimer.setText("00:00");
                 updateButtons();
-                // SỬA LỖI: Reset lại trạng thái của timer khi kết thúc
-                timeLeftInMillis = START_TIME_IN_MILLIS;
-                updateCountDownText();
-                updateProgressBar();
+                edtMinutes.setEnabled(true);
+                Toast.makeText(PomodoroActivity.this, "Hết giờ tập trung!", Toast.LENGTH_LONG).show();
             }
         }.start();
 
         timerRunning = true;
         updateButtons();
-    }
-
-    private void pauseTimer() {
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
-        timerRunning = false;
-        updateButtons();
+        edtMinutes.setEnabled(false); // Khóa ô nhập
     }
 
     private void resetTimer() {
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
-        timeLeftInMillis = START_TIME_IN_MILLIS;
         timerRunning = false;
-        updateCountDownText();
-        updateProgressBar();
+        mTimeLeftInMillis = 0;
+
+        tvTimer.setText("00:00");
+        progressBar.setProgress(10000); // Trả về đầy vòng tròn
+
+        edtMinutes.setEnabled(true);
         updateButtons();
     }
 
     private void updateCountDownText() {
-        int minutes = (int) (timeLeftInMillis / 1000) / 60;
-        int seconds = (int) (timeLeftInMillis / 1000) % 60;
-        String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
-        tvTimer.setText(timeLeftFormatted);
+        int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
+        int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
+
+        String timeFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+        tvTimer.setText(timeFormatted);
     }
 
     private void updateProgressBar() {
-        progressBar.setProgress((int) (100 * timeLeftInMillis / START_TIME_IN_MILLIS));
+        // Tính toán phần trăm còn lại để cập nhật vòng tròn
+        // Công thức: (Thời gian còn / Tổng thời gian) * Max
+        int progress = (int) ((mTimeLeftInMillis * 10000) / mStartTimeInMillis);
+        progressBar.setProgress(progress);
     }
 
     private void updateButtons() {
         if (timerRunning) {
-            btnStart.setVisibility(View.GONE);
-            btnPause.setVisibility(View.VISIBLE);
+            btnStart.setVisibility(View.GONE); // Ẩn nút Bắt đầu
+            btnStop.setVisibility(View.VISIBLE); // Hiện nút Hủy
+            edtMinutes.setVisibility(View.INVISIBLE); // Ẩn ô nhập cho đỡ rối
         } else {
             btnStart.setVisibility(View.VISIBLE);
-            btnPause.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // SỬA LỖI: Tự động tạm dừng timer nếu activity bị tạm dừng
-        if (timerRunning) {
-            pauseTimer();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Bắt đầu lại video khi quay lại màn hình
-        earthVideoView.start();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
+            btnStop.setVisibility(View.GONE);
+            edtMinutes.setVisibility(View.VISIBLE);
         }
     }
 }
