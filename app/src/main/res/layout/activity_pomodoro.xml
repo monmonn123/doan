@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F9FF"
+    tools:context=".PomodoroActivity">
+
+    <!-- Khung tròn chứa Trái Đất và ProgressBar -->
+    <FrameLayout
+        android:id="@+id/timerContainer"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true">
+
+        <!-- Viền tròn tiến trình -->
+
+        <!-- SỬA LỖI: Dùng VideoView thay cho ImageView -->
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:max="100"
+            android:progressDrawable="@drawable/pomodoro_progress_bar" />
+
+        <com.example.doan_mau.CustomVideoView
+            android:id="@+id/earthVideoView"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
+
+    <!-- Thời gian còn lại -->
+    <TextView
+        android:id="@+id/tvTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/timerContainer"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:text="25:00"
+        android:textColor="#0284C7"
+        android:textSize="56sp"
+        android:textStyle="bold" />
+
+    <!-- Các nút điều khiển -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:padding="32dp">
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bắt đầu" />
+
+        <Button
+            android:id="@+id/btnPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="Tạm dừng"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnStop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kết thúc" />
+    </LinearLayout>
+
+</RelativeLayout>
