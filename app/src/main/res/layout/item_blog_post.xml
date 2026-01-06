@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="20dp"
+    app:cardCornerRadius="16dp"
     app:cardElevation="2dp">
 
     <LinearLayout
@@ -19,94 +19,131 @@
             android:id="@+id/tvAuthorName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sinh viên ẩn danh"
+            android:text="23162006 - Nguyễn Văn A"
             android:textStyle="bold"
-            android:textColor="#6C5CE7"
-            android:textSize="16sp"/>
-
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Vừa xong"
-            android:textSize="12sp"
-            android:textColor="#B2BEC3"
-            android:layout_marginBottom="8dp"/>
+            android:textColor="#3B82F6"
+            android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/tvContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nội dung bài đăng..."
-            android:textColor="#2D3436"
-            android:textSize="15sp"
-            android:layout_marginBottom="10dp"/>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardImage"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            app:cardCornerRadius="12dp"
-            android:visibility="gone"
-            android:layout_marginBottom="10dp">
-            <ImageView
-                android:id="@+id/imgPost"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"/>
-        </androidx.cardview.widget.CardView>
+            android:layout_marginTop="8dp"
+            android:text="Nội dung câu hỏi..."
+            android:textColor="#1E293B"
+            android:textSize="14sp"/>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#F1F2F6"
-            android:layout_marginVertical="10dp"/>
+            android:background="#F1F5F9"
+            android:layout_marginVertical="12dp"/>
 
+        <!-- Tương tác của Sinh viên -->
         <LinearLayout
             android:id="@+id/layoutStudentAction"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <CheckBox
-                android:id="@+id/cbLike"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:id="@+id/btnLike"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" Thích"
-                android:button="@android:drawable/btn_star_big_off"
-                android:layout_marginEnd="20dp"/>
-            <TextView
+                android:orientation="horizontal"
+                android:padding="8dp">
+                <ImageView
+                    android:id="@+id/imgLike"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_thumb_up"
+                    app:tint="#64748B" />
+                <TextView
+                    android:id="@+id/tvLikeCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="0" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnDislike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:orientation="horizontal"
+                android:padding="8dp">
+                <ImageView
+                    android:id="@+id/imgDislike"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_thumb_down"
+                    app:tint="#64748B" />
+                <TextView
+                    android:id="@+id/tvDislikeCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="0" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btnComment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="💬 Bình luận"
-                android:textColor="#0984E3"/>
+                android:layout_marginStart="8dp"
+                android:orientation="horizontal"
+                android:padding="8dp">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chat_bubble_outline"
+                    app:tint="#64748B" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="Câu trả lời" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/btnReport"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_report"
+                app:tint="#EF4444" />
         </LinearLayout>
 
+        <!-- Tương tác của Admin (Duyệt bài) -->
         <LinearLayout
             android:id="@+id/layoutAdminAction"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:visibility="gone"
-            android:weightSum="2"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="8dp">
             <Button
                 android:id="@+id/btnReject"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="KHÔNG PHÙ HỢP"
-                android:backgroundTint="#FF7675"
                 android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:textSize="11sp"/>
+                android:text="Từ chối"
+                android:backgroundTint="#EF4444"
+                android:layout_marginEnd="4dp"/>
             <Button
                 android:id="@+id/btnApprove"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="DUYỆT BÀI"
-                android:backgroundTint="#55E6C1"
                 android:layout_weight="1"
-                android:textSize="11sp"/>
+                android:text="Chấp nhận"
+                android:backgroundTint="#10B981"
+                android:layout_marginStart="4dp"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

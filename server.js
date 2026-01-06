@@ -8,7 +8,7 @@ const User = require('./model/User');
 const Question = require('./model/Question');
 const authRoutes = require('./routes/auth');
 const aiChatRoutes = require('./routes/aiChat');
-const messageRoutes = require('./routes/message'); // THÊM DÒNG NÀY
+const messageRoutes = require('./routes/message');
 
 const app = express();
 
@@ -27,7 +27,7 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/befinalproj
 
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', aiChatRoutes);
-app.use('/api/messages', messageRoutes); // ĐĂNG KÝ ROUTE TIN NHẮN TẠI ĐÂY
+app.use('/api/messages', messageRoutes);
 
 app.post('/api/questions/post', upload.fields([{ name: 'image' }, { name: 'file' }]), async (req, res) => {
     try {
@@ -46,7 +46,9 @@ app.post('/api/questions/post', upload.fields([{ name: 'image' }, { name: 'file'
 
 app.get('/api/questions/pending', async (req, res) => {
     try {
-        const pendingPosts = await Question.find({ status: 'pending' }).populate('userId', 'username');
+        const pendingPosts = await Question.find({ status: 'pending' })
+            .populate('userId', 'mssv hoTen')
+            .populate('comments.userId', 'mssv hoTen');
         res.json(pendingPosts);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -69,7 +71,8 @@ app.put('/api/questions/approve/:id', async (req, res) => {
 app.get('/api/questions/public', async (req, res) => {
     try {
         const publicPosts = await Question.find({ status: 'approved' })
-            .populate('userId', 'username')
+            .populate('userId', 'mssv hoTen')
+            .populate('comments.userId', 'mssv hoTen')
             .sort({ createdAt: -1 });
         res.json(publicPosts);
     } catch (err) {
@@ -92,14 +95,40 @@ app.post('/api/questions/comment/:id', async (req, res) => {
 
 app.put('/api/questions/like/:id', async (req, res) => {
     try {
-        const { userId }  = req.body;
+        const { userId } = req.body;
         const question = await Question.findById(req.params.id);
+        if (!question) return res.status(404).json({ message: "Không tìm thấy bài viết" });
+
         if (!question.likes.includes(userId)) {
-            await question.updateOne({ $push: { likes: userId } });
-            res.status(200).json({ message: "Đã thích bài viết!" });
+            await Question.findByIdAndUpdate(req.params.id, { 
+                $push: { likes: userId },
+                $pull: { dislikes: userId }
+            });
+            res.json({ message: "Đã thích!" });
         } else {
-            await question.updateOne({ $pull: { likes: userId } });
-            res.status(200).json({ message: "Đã bỏ thích!" });
+            await Question.findByIdAndUpdate(req.params.id, { $pull: { likes: userId } });
+            res.json({ message: "Đã bỏ thích!" });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/questions/dislike/:id', async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const question = await Question.findById(req.params.id);
+        if (!question) return res.status(404).json({ message: "Không tìm thấy bài viết" });
+
+        if (!question.dislikes.includes(userId)) {
+            await Question.findByIdAndUpdate(req.params.id, { 
+                $push: { dislikes: userId },
+                $pull: { likes: userId }
+            });
+            res.json({ message: "Đã không thích!" });
+        } else {
+            await Question.findByIdAndUpdate(req.params.id, { $pull: { dislikes: userId } });
+            res.json({ message: "Đã bỏ không thích!" });
         }
     } catch (err) {
         res.status(500).json({ error: err.message });

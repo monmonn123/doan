@@ -37,6 +37,9 @@
         <activity android:name=".AiChatActivity" />
         <activity android:name=".AddQuestionActivity" />
         <activity android:name=".UserChatActivity" />
+        <activity android:name=".AdminActivity" />
+        <activity android:name=".NotificationActivity" />
+        <activity android:name=".CommentsActivity" />
 
         <receiver android:name=".AlarmReceiver" android:exported="false" />
 

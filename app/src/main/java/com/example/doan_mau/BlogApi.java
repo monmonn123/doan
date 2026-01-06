@@ -18,8 +18,14 @@ public interface BlogApi {
     @GET("api/questions/public")
     Call<List<BlogPost>> getPublicPosts();
 
+    @GET("api/questions/pending")
+    Call<List<BlogPost>> getPendingPosts();
+
     @PUT("api/questions/like/{id}")
     Call<ResponseBody> toggleLike(@Path("id") String id, @Body Map<String, String> userId);
+
+    @PUT("api/questions/dislike/{id}")
+    Call<ResponseBody> toggleDislike(@Path("id") String id, @Body Map<String, String> userId);
 
     @POST("api/questions/comment/{id}")
     Call<ResponseBody> postComment(@Path("id") String id, @Body Map<String, String> commentData);
