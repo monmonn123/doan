@@ -68,40 +68,46 @@ public class ConfirmCodeActivity extends AppCompatActivity {
     }
 
     // Hàm gọi API chạy ngầm
+    // Tìm đến hàm registerUserOnServer và sửa phần JSON Body như sau:
     private void registerUserOnServer(String username, String email, String password, String fullName) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
+            HttpURLConnection conn = null; // Khai báo ngoài để đảm bảo ngắt kết nối an toàn
             try {
                 URL url = new URL(REGISTER_URL);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn = (HttpURLConnection) url.openConnection();
+
+                // BƯỚC 1: Cài đặt thuộc tính TRƯỚC KHI kết nối
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
                 conn.setRequestProperty("Accept", "application/json");
                 conn.setDoOutput(true);
                 conn.setDoInput(true);
 
+                // BƯỚC 2: Đóng gói JSON (Sửa lỗi studentId đỏ lòm)
                 JSONObject jsonBody = new JSONObject();
-                jsonBody.put("username", username); // Bắt buộc
+                jsonBody.put("mssv", username); // Dùng đúng biến username truyền từ trên xuống
+                jsonBody.put("hoTen", fullName);
                 jsonBody.put("email", email);
                 jsonBody.put("password", password);
-                jsonBody.put("firstName", fullName); // Lưu Họ tên vào firstName
-                jsonBody.put("lastName", "");
-                jsonBody.put("role", "user");
-                jsonBody.put("avatar", "");
 
+                // BƯỚC 3: Mở luồng và gửi dữ liệu
                 OutputStream os = conn.getOutputStream();
                 os.write(jsonBody.toString().getBytes("UTF-8"));
                 os.close();
 
+                // BƯỚC 4: Nhận kết quả từ Server
                 int responseCode = conn.getResponseCode();
 
-                // Đọc phản hồi
+                // Xóa bỏ tất cả các dòng setRequestProperty thừa ở đoạn này
+
                 BufferedReader in;
                 if (responseCode >= 200 && responseCode < 300) {
                     in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 } else {
                     in = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
                 }
+
                 StringBuilder response = new StringBuilder();
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
@@ -109,12 +115,9 @@ public class ConfirmCodeActivity extends AppCompatActivity {
                 }
                 in.close();
 
-                // Quay về giao diện chính để thông báo
                 runOnUiThread(() -> {
                     if (responseCode == 200 || responseCode == 201) {
-                        Toast.makeText(ConfirmCodeActivity.this, "Đăng ký thành công! Hãy đăng nhập.", Toast.LENGTH_LONG).show();
-
-                        // Chuyển về Login
+                        Toast.makeText(ConfirmCodeActivity.this, "Đăng ký thành công!", Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(ConfirmCodeActivity.this, LoginActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
@@ -126,9 +129,9 @@ public class ConfirmCodeActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                runOnUiThread(() ->
-                        Toast.makeText(ConfirmCodeActivity.this, "Lỗi kết nối: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                );
+                runOnUiThread(() -> Toast.makeText(ConfirmCodeActivity.this, "Lỗi kết nối: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            } finally {
+                if (conn != null) conn.disconnect(); // Ngắt kết nối để giải phóng tài nguyên
             }
         });
     }

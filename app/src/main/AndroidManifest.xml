@@ -3,12 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <application
         android:allowBackup="true"
@@ -20,22 +15,27 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
-        <activity android:name=".MainActivity" android:exported="true">
+        <activity android:name=".LoginActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <activity android:name=".MainActivity" />
+        <activity android:name=".RegistrationActivity" />
+
+        <activity android:name=".ConfirmCodeActivity" />
+
+        <activity android:name=".BlogMainActivity" />
+        <activity android:name=".CreatePostActivity" />
         <activity android:name=".MusicPlayerActivity" />
         <activity android:name=".PomodoroActivity" />
         <activity android:name=".AppBlockerActivity" />
         <activity android:name=".UploadActivity" />
         <activity android:name=".DocumentListActivity" />
-
         <activity android:name=".ProgressActivity" />
 
         <receiver android:name=".AlarmReceiver" android:exported="false" />
-
     </application>
 </manifest>

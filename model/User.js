@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    username: {
+    hoTen: { // Đổi từ firstName/lastName sang hoTen cho khớp ảnh DB
+        type: String,
+        required: true,
+        trim: true
+    },
+    mssv: { // Thêm trường mssv như trong ảnh DB
         type: String,
         required: true,
         unique: true,
@@ -18,35 +23,18 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    firstName: {
-        type: String,
-        trim: true
-    },
-    lastName: {
-        type: String,
-        trim: true
-    },
     role: {
         type: String,
         enum: ['user', 'admin'],
         default: 'user'
     },
-    isActive: {
-        type: Boolean,
-        default: true
-    },
     avatar: {
         type: String,
-        trim: true
+        default: ""
     }
 }, {
     timestamps: true
 });
 
-// Index for better query performance
-// userSchema.index({ email: 1 });
-// userSchema.index({ username: 1 });
-
 const User = mongoose.model('User', userSchema);
-
 module.exports = User;

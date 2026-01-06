@@ -3,93 +3,39 @@ const { generateToken, hashPassword, comparePassword } = require('../config/auth
 
 const register = async(req, res) => {
     try {
-        const { username, email, password, firstName, lastName, avatar } = req.body;
+        // Lấy đúng các trường hoTen, mssv từ DB của nhóm Dung
+        const { hoTen, mssv, email, password } = req.body;
 
-        // Check if user already exists
-        const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-        if (existingUser) {
-            return res.status(400).json({ message: 'User already exists' });
-        }
+        const existingUser = await User.findOne({ $or: [{ email }, { mssv }] });
+        if (existingUser) return res.status(400).json({ message: 'MSSV hoặc Email đã tồn tại' });
 
-        // Hash password
         const hashedPassword = await hashPassword(password);
-
-        // Create new user
-        const user = new User({
-            username,
-            email,
-            password: hashedPassword,
-            firstName,
-            lastName,
-            avatar
-        });
-
+        const user = new User({ hoTen, mssv, email, password: hashedPassword });
         await user.save();
 
-        // Generate token
-        const token = generateToken(user._id);
-
-        res.status(201).json({
-            message: 'User registered successfully',
-            token,
-            user: {
-                id: user._id,
-                username: user.username,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                avatar: user.avatar,
-                role: user.role
-            }
-        });
+        res.status(201).json({ message: 'Đăng ký thành công!' });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 };
 
 const login = async(req, res) => {
     try {
-        const { email, password } = req.body;
+        const { mssv, password } = req.body; // Đăng nhập bằng MSSV cho chuẩn
+        const user = await User.findOne({ mssv });
 
-        // Find user by email
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid credentials' });
+        if (!user || !(await comparePassword(password, user.password))) {
+            return res.status(400).json({ message: 'Sai MSSV hoặc mật khẩu' });
         }
 
-        // Check password
-        const isPasswordValid = await comparePassword(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(400).json({ message: 'Invalid credentials' });
-        }
-
-        // Check if user is active
-        if (!user.isActive) {
-            return res.status(400).json({ message: 'Account is deactivated' });
-        }
-
-        // Generate token
         const token = generateToken(user._id);
-
         res.json({
-            message: 'Login successful',
             token,
-            user: {
-                id: user._id,
-                username: user.username,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                avatar: user.avatar,
-                role: user.role
-            }
+            user: { id: user._id, hoTen: user.hoTen, role: user.role }
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        res.status(500).json({ message: 'Lỗi server' });
     }
 };
 
-module.exports = {
-    register,
-    login
-};
+module.exports = { register, login };
