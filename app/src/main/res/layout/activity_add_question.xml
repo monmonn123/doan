@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarAddQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:title="Đặt câu hỏi mới"
+        app:navigationIcon="@android:drawable/ic_menu_revert" />
+
+    <EditText
+        android:id="@+id/etQuestionContent"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edittext_border"
+        android:gravity="top"
+        android:hint="Nhập nội dung câu hỏi của bạn tại đây..."
+        android:padding="12dp"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btnSubmitQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="#3B82F6"
+        android:text="Gửi câu hỏi"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="* Câu hỏi của bạn sẽ được gửi đến quản trị viên để duyệt trước khi hiển thị công khai."
+        android:textColor="#64748B"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-light" />
+
+</LinearLayout>

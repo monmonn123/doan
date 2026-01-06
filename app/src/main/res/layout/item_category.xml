@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Phần Header luôn hiển thị -->
+        <LinearLayout
+            android:id="@+id/layoutHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <!-- Icon tròn -->
+            <ImageView
+                android:id="@+id/imgCategoryIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_launcher_background"
+                android:padding="8dp"
+                android:src="@android:drawable/ic_menu_agenda"
+                app:tint="@android:color/black"/> <!-- SỬA LỖI Ở ĐÂY -->
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvCategoryTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tiêu đề"
+                    android:textColor="#333333"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCategoryDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mô tả ngắn gọn"
+                    android:textColor="#888888"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imgArrow"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/arrow_down_float"
+                app:tint="#888888" />
+
+        </LinearLayout>
+
+        <!-- Phần danh sách con (Sổ xuống) -->
+        <LinearLayout
+            android:id="@+id/layoutFeatures"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#F5F5F5"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:visibility="gone" /> <!-- Mặc định ẩn đi -->
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
