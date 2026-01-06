@@ -100,9 +100,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             case "Đồng hồ Focus":
                 mContext.startActivity(new Intent(mContext, PomodoroActivity.class));
                 break;
-            case "Thống kê tập trung":
-                Toast.makeText(mContext, "Mở biểu đồ thống kê thời gian đã tập trung!", Toast.LENGTH_SHORT).show();
-                break;
             case "Nhạc White Noise":
                 playOrStopMusic();
                 break;

@@ -43,9 +43,6 @@ public class StudentData {
         List<Feature> scheduleFeatures = new ArrayList<>();
         scheduleFeatures.add(new Feature("Điểm danh bằng QR", "Quét mã QR để điểm danh vào lớp ngay lập tức.", R.drawable.ic_qr_code));
         scheduleFeatures.add(new Feature("Lịch học & Deadline", "Xem lịch học, hạn nộp bài tập và nhận nhắc nhở.", R.drawable.ic_access_time));
-        scheduleFeatures.add(new Feature("Đồng bộ Google Calendar", "Tự động đồng bộ lịch cá nhân với lịch trường.", R.drawable.ic_sync));
-        scheduleFeatures.add(new Feature("Widget lịch ngày", "Tiện ích màn hình chính hiển thị lịch trình hôm nay.", R.drawable.ic_widgets));
-        scheduleFeatures.add(new Feature("Lịch sử điểm danh", "Xem lại lịch sử các lần điểm danh đã lưu.", R.drawable.ic_history));
 
         categories.add(new Category("schedule", "Lịch trình & Điểm danh", "Quản lý thời gian và điểm danh lớp học", 0xFF3B82F6, R.drawable.ic_calendar_today, scheduleFeatures));
 
@@ -71,7 +68,6 @@ public class StudentData {
         List<Feature> focusFeatures = new ArrayList<>();
         focusFeatures.add(new Feature("Chặn App gây nghiện", "Tạm khóa TikTok, Facebook trong giờ học.", R.drawable.ic_app_blocking));
         focusFeatures.add(new Feature("Đồng hồ Focus", "Pomodoro timer và đo thời gian thực học.", R.drawable.ic_hourglass_top));
-        focusFeatures.add(new Feature("Thống kê tập trung", "Biểu đồ phân tích mức độ tập trung tuần.", R.drawable.ic_analytics));
         focusFeatures.add(new Feature("Nhạc White Noise", "Phát nhạc Lofi/Mưa rơi giúp tập trung.", R.drawable.ic_music_note));
 
         categories.add(new Category("focus", "Góc Tập trung (Focus)", "Công cụ tối ưu hiệu suất học", 0xFFF97316, R.drawable.ic_timer, focusFeatures));
