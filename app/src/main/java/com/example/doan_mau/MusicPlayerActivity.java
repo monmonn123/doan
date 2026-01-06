@@ -2,56 +2,59 @@ package com.example.doan_mau;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MusicPlayerActivity extends AppCompatActivity {
-    private ListView listViewMusic;
-    private TextView tvCurrentSong;
-    private Button btnStopMusic;
-    private static MediaPlayer mediaPlayer; // Static để nhạc chạy ngầm mượt mà
+    // Đổi sang RecyclerView để dùng giao diện xịn
+    RecyclerView rvMusic;
+    Button btnStop;
+    MediaPlayer mediaPlayer;
+
+    String[] songNames = {"Chill Lofi", "Lofi Ambient Study", "Lofi Background", "Lofi Chill", "Rain Sound"};
+    int[] songFiles = {R.raw.chill_lofi, R.raw.lofi_ambient_study, R.raw.lofi_background_music, R.raw.lofi_chill, R.raw.rain_sound};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_music_player); // Hết đỏ sau khi sửa XML
+        setContentView(R.layout.activity_music_player);
 
-        listViewMusic = findViewById(R.id.listViewMusic);
-        tvCurrentSong = findViewById(R.id.tvCurrentSong);
-        btnStopMusic = findViewById(R.id.btnStopMusic);
+        // Fix lỗi: Tìm đúng ID rvMusic trong file XML mới
+        rvMusic = findViewById(R.id.rvMusic);
+        btnStop = findViewById(R.id.btnStopMusic);
 
-        String[] songNames = {"Playlist Nhạc Chill 2 Giờ"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, songNames);
-        listViewMusic.setAdapter(adapter);
+        // Thiết lập hiển thị danh sách dạng thẻ cuộn
+        rvMusic.setLayoutManager(new LinearLayoutManager(this));
 
-        listViewMusic.setOnItemClickListener((parent, view, position, id) -> {
-            try {
-                if (mediaPlayer != null) {
-                    mediaPlayer.release();
-                }
-                // MediaPlayer.create nên chạy trong try-catch để tránh treo App
-                mediaPlayer = MediaPlayer.create(this, R.raw.nhacthugian);
-                if (mediaPlayer != null) {
-                    mediaPlayer.setLooping(true);
-                    mediaPlayer.start();
-                    tvCurrentSong.setText("Đang phát: " + songNames[0]);
-                }
-            } catch (Exception e) {
-                Toast.makeText(this, "Lỗi phát nhạc!", Toast.LENGTH_SHORT).show();
-            }
+        MusicAdapter adapter = new MusicAdapter(songNames, position -> {
+            stopMusic();
+            mediaPlayer = MediaPlayer.create(MusicPlayerActivity.this, songFiles[position]);
+            mediaPlayer.start();
+            Toast.makeText(this, "Đang phát: " + songNames[position], Toast.LENGTH_SHORT).show();
         });
 
-        btnStopMusic.setOnClickListener(v -> {
-            if (mediaPlayer != null) {
-                mediaPlayer.stop();
-                mediaPlayer.release();
-                mediaPlayer = null;
-                tvCurrentSong.setText("Đã dừng");
-            }
+        rvMusic.setAdapter(adapter);
+
+        btnStop.setOnClickListener(v -> {
+            stopMusic();
+            Toast.makeText(this, "Đã dừng nhạc", Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void stopMusic() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopMusic();
     }
 }
