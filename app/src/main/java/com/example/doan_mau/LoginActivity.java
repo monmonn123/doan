@@ -8,22 +8,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import org.json.JSONObject;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.HashMap;
+import java.util.Map;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
-
     private EditText edtMssv, edtPassword;
     private Button btnLogin;
-    private TextView tvRegister;
-
-    private static final String LOGIN_URL = "http://10.0.2.2:4000/api/auth/login";
+    private TextView tvRegister, tvForgotPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,83 +28,61 @@ public class LoginActivity extends AppCompatActivity {
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvRegister = findViewById(R.id.tvGoToRegister);
+        tvForgotPassword = findViewById(R.id.tvForgotPassword);
 
-        btnLogin.setOnClickListener(v -> {
-            String mssv = edtMssv.getText().toString().trim();
-            String password = edtPassword.getText().toString().trim();
+        btnLogin.setOnClickListener(v -> performLogin());
+        tvRegister.setOnClickListener(v -> startActivity(new Intent(this, RegistrationActivity.class)));
 
-            if (mssv.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập MSSV và mật khẩu", Toast.LENGTH_SHORT).show();
-            } else {
-                loginUser(mssv, password);
-            }
-        });
-
-        tvRegister.setOnClickListener(v -> {
-            startActivity(new Intent(this, RegistrationActivity.class));
+        // XỬ LÝ QUÊN MẬT KHẨU
+        tvForgotPassword.setOnClickListener(v -> {
+            Toast.makeText(this, "Chuyển tới trang nhận OTP qua mail...", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, ForgotPasswordActivity.class);
+            startActivity(intent);
         });
     }
 
-    private void loginUser(String mssv, String password) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            try {
-                URL url = new URL(LOGIN_URL);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                conn.setDoOutput(true);
+    private void performLogin() {
+        String mssv = edtMssv.getText().toString().trim();
+        String password = edtPassword.getText().toString().trim();
 
-                JSONObject jsonParam = new JSONObject();
-                jsonParam.put("mssv", mssv);
-                jsonParam.put("password", password);
+        if (mssv.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập đầy đủ", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                OutputStream os = conn.getOutputStream();
-                os.write(jsonParam.toString().getBytes("UTF-8"));
-                os.close();
+        Map<String, String> body = new HashMap<>();
+        body.put("mssv", mssv);
+        body.put("password", password);
 
-                int responseCode = conn.getResponseCode();
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                        responseCode == 200 ? conn.getInputStream() : conn.getErrorStream()));
+        RetrofitClient.getApi().loginUser(body).enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Map<String, Object> bodyData = response.body();
+                    Map<String, Object> user = (Map<String, Object>) bodyData.get("user");
+                    String role = (String) user.get("role");
 
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = in.readLine()) != null) response.append(line);
-                in.close();
+                    // LƯU PHIÊN ĐĂNG NHẬP
+                    SharedPreferences prefs = getSharedPreferences("MY_APP_PREFS", MODE_PRIVATE);
+                    prefs.edit().putString("USER_ID", (String) user.get("id"))
+                            .putString("ROLE", role)
+                            .putString("FULL_NAME", (String) user.get("hoTen"))
+                            .putString("USER_MSSV", (String) user.get("mssv"))
+                            .putString("USER_EMAIL", (String) user.get("email"))
+                            .putBoolean("IS_LOGGED_IN", true).apply();
 
-                runOnUiThread(() -> {
-                    try {
-                        JSONObject jsonResponse = new JSONObject(response.toString());
-                        if (responseCode == 200) {
-                            String token = jsonResponse.optString("token");
-                            JSONObject userObj = jsonResponse.getJSONObject("user");
-
-                            String userId = userObj.getString("id");
-                            String fullName = userObj.optString("hoTen", "Sinh viên");
-                            String role = userObj.optString("role", "user");
-
-                            SharedPreferences prefs = getSharedPreferences("MY_APP_PREFS", MODE_PRIVATE);
-                            prefs.edit().putString("USER_ID", userId)
-                                    .putString("USER_TOKEN", token)
-                                    .putString("FULL_NAME", fullName)
-                                    .putString("ROLE", role)
-                                    .putBoolean("IS_LOGGED_IN", true).apply();
-
-                            Toast.makeText(this, "Chào mừng " + fullName, Toast.LENGTH_SHORT).show();
-
-                            // PHÂN QUYỀN VÀO TRANG CHỦ HOẶC ADMIN
-                            if ("admin".equals(role)) {
-                                startActivity(new Intent(this, AdminActivity.class));
-                            } else {
-                                startActivity(new Intent(this, MainActivity.class));
-                            }
-                            finish();
-                        } else {
-                            Toast.makeText(this, jsonResponse.optString("message", "Lỗi"), Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) { e.printStackTrace(); }
-                });
-            } catch (Exception e) { e.printStackTrace(); }
+                    // PHÂN QUYỀN ĐIỀU HƯỚNG
+                    if ("admin".equals(role)) startActivity(new Intent(LoginActivity.this, AdminActivity.class));
+                    else if ("manager".equals(role)) startActivity(new Intent(LoginActivity.this, ManagerActivity.class));
+                    else startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Sai tài khoản hoặc mật khẩu!", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "Lỗi kết nối Server", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

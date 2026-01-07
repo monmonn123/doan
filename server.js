@@ -95,49 +95,82 @@ app.post('/api/questions/comment/:id', async (req, res) => {
     }
 });
 
+// --- LOGIC LIKE KIỂU FACEBOOK ---
 app.put('/api/questions/like/:id', async (req, res) => {
     try {
         const { userId } = req.body;
         const question = await Question.findById(req.params.id);
         if (!question) return res.status(404).json({ message: "Không tìm thấy bài viết" });
 
-        if (!question.likes.includes(userId)) {
-            await Question.findByIdAndUpdate(req.params.id, { 
+        const isLiked = question.likes.includes(userId);
+        if (isLiked) {
+            // Nếu đã Like rồi -> Bỏ Like
+            await Question.findByIdAndUpdate(req.params.id, { $pull: { likes: userId } });
+        } else {
+            // Nếu chưa Like -> Thêm Like VÀ tự động bỏ Dislike
+            await Question.findByIdAndUpdate(req.params.id, {
                 $push: { likes: userId },
                 $pull: { dislikes: userId }
             });
-            res.json({ message: "Đã thích!" });
-        } else {
-            await Question.findByIdAndUpdate(req.params.id, { $pull: { likes: userId } });
-            res.json({ message: "Đã bỏ thích!" });
         }
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+
+        const updated = await Question.findById(req.params.id);
+        res.json({
+            likesCount: updated.likes.length,
+            dislikesCount: updated.dislikes.length,
+            isLiked: !isLiked
+        });
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// --- LOGIC DISLIKE TƯƠNG TỰ ---
 app.put('/api/questions/dislike/:id', async (req, res) => {
     try {
         const { userId } = req.body;
         const question = await Question.findById(req.params.id);
-        if (!question) return res.status(404).json({ message: "Không tìm thấy bài viết" });
+        const isDisliked = question.dislikes.includes(userId);
 
-        if (!question.dislikes.includes(userId)) {
-            await Question.findByIdAndUpdate(req.params.id, { 
-                $push: { dislikes: userId },
-                $pull: { likes: userId }
-            });
-            res.json({ message: "Đã không thích!" });
-        } else {
+        if (isDisliked) {
             await Question.findByIdAndUpdate(req.params.id, { $pull: { dislikes: userId } });
-            res.json({ message: "Đã bỏ không thích!" });
+        } else {
+            await Question.findByIdAndUpdate(req.params.id, {
+                $push: { dislikes: userId },
+                $pull: { likes: userId } // Bấm Dislike thì tự bỏ Like
+            });
         }
+        const updated = await Question.findById(req.params.id);
+        res.json({ likesCount: updated.likes.length, dislikesCount: updated.dislikes.length });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// server.js
+app.put('/api/users/update-profile/:id', upload.single('avatar'), async (req, res) => {
+    try {
+        // Nhận tất cả thông tin từ body gửi lên
+        const { hoTen, email, mssv } = req.body;
+        const updateFields = { hoTen, email, mssv };
+
+        // Nếu có ảnh mới thì mới cập nhật đường dẫn ảnh
+        if (req.file) {
+            updateFields.avatar = req.file.path;
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.params.id,
+            updateFields,
+            { new: true } // Trả về bản ghi đã cập nhật
+        ).select('-password');
+
+        res.json({ success: true, user: updatedUser });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+    // Lấy cổng từ file .env hoặc mặc định là 4000
+    const PORT = process.env.PORT || 4000;
+
+    // Bắt đầu lắng nghe các kết nối
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });

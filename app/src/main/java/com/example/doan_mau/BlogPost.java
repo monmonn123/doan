@@ -10,11 +10,17 @@ public class BlogPost {
     public UserObj userId;
     public List<CommentObj> comments;
     public List<String> likes;
-    public List<String> dislikes; // THÊM TRƯỜNG DISLIKES
+    public List<String> dislikes;
 
     public String getId() { return _id; }
     public String getContent() { return content; }
-    
+
+    // THÊM CÁC HÀM NÀY ĐỂ ADAPTER KHÔNG LỖI
+    public int getLikesCount() { return likes != null ? likes.size() : 0; }
+    public int getDislikesCount() { return dislikes != null ? dislikes.size() : 0; }
+    public void setLikesCount(int count) { /* Cập nhật để UI nhảy số */ }
+    public void setDislikesCount(int count) { /* Cập nhật để UI nhảy số */ }
+
     public String getUserInfo() {
         if (userId != null) {
             String mssv = (userId.mssv != null) ? userId.mssv : "N/A";

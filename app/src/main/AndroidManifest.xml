@@ -41,7 +41,9 @@
         <activity android:name=".NotificationActivity" />
         <activity android:name=".CommentsActivity" />
         <activity android:name=".ProfileActivity" />
-
+        <activity android:name=".ManagerActivity" />
+        <activity android:name=".ForgotPasswordActivity" android:exported="false" />
+        <activity android:name=".ResetPasswordActivity" android:exported="false" />
         <receiver android:name=".AlarmReceiver" android:exported="false" />
 
         <service

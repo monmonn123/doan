@@ -41,23 +41,17 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void loadUserData() {
         SharedPreferences prefs = getSharedPreferences("MY_APP_PREFS", MODE_PRIVATE);
-        String fullName = prefs.getString("FULL_NAME", "Chưa có tên");
-        String mssv = prefs.getString("USER_MSSV", "Chưa có MSSV");
-        String email = prefs.getString("USER_EMAIL", "sinhvien@hcmute.edu.vn");
-
-        tvFullName.setText(fullName);
-        tvMssv.setText(mssv);
-        tvEmail.setText(email);
-        
-        // Mặc định set ảnh nếu có logic lưu avatar thì load ở đây
-        imgProfileAvatar.setImageResource(R.drawable.bogo);
+        tvFullName.setText(prefs.getString("FULL_NAME", "Chưa có tên"));
+        tvMssv.setText(prefs.getString("USER_MSSV", "Chưa có MSSV"));
+        tvEmail.setText(prefs.getString("USER_EMAIL", "sinhvien@hcmute.edu.vn"));
+        // Mặc định load avatar từ server nếu có
+        // Glide.with(this).load("http://10.0.2.2:4000/" + avatarPath).into(imgProfileAvatar);
     }
 
     private void logout() {
         SharedPreferences prefs = getSharedPreferences("MY_APP_PREFS", MODE_PRIVATE);
-        prefs.edit().clear().apply();
-        
-        Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+        prefs.edit().clear().apply(); // Xóa sạch dữ liệu
+        Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();

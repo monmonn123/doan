@@ -1,12 +1,15 @@
+// routes/auth.js
 const express = require('express');
-const { register, login } = require('../controller/authController');
-
 const router = express.Router();
 
-// Register route
-router.post('/register', register);
+// Đảm bảo đường dẫn tới file controller chính xác
+const authController = require('../controller/authController');
 
-// Login route
-router.post('/login', login);
+// SỬA TẠI ĐÂY: Thêm authController. vào trước register và login
+router.post('/register', authController.register);
+router.post('/login', authController.login);
+
+router.post('/forgot-password/request', authController.requestForgotPasswordOTP);
+router.post('/forgot-password/reset', authController.resetPassword);
 
 module.exports = router;

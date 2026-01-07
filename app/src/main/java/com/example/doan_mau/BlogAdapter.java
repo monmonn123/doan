@@ -36,13 +36,14 @@ public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.BlogViewHolder
     public void onBindViewHolder(@NonNull BlogViewHolder holder, int position) {
         BlogPost post = list.get(position);
         Context context = holder.itemView.getContext();
-        
+
         holder.tvAuthor.setText(post.getUserInfo());
         holder.tvContent.setText(post.content);
-        
-        // Hiển thị số lượng tương tác
+
+        // Hiển thị số lượng tương tác ban đầu
         updateInteractionCounts(holder, post);
 
+        // Phân quyền hiển thị nút Admin/Student
         if (isAdmin) {
             holder.layoutAdmin.setVisibility(View.VISIBLE);
             holder.layoutStudent.setVisibility(View.GONE);
@@ -54,59 +55,53 @@ public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.BlogViewHolder
         SharedPreferences prefs = context.getSharedPreferences("MY_APP_PREFS", Context.MODE_PRIVATE);
         String currentUserId = prefs.getString("USER_ID", "");
 
-        // 1. LIKE
+        // 1. XỬ LÝ NÚT LIKE (KIỂU FACEBOOK)
+        // Trong onBindViewHolder của BlogAdapter.java
         holder.btnLike.setOnClickListener(v -> {
-            if (currentUserId.isEmpty()) return;
             Map<String, String> body = new HashMap<>();
             body.put("userId", currentUserId);
-            
-            RetrofitClient.getApi().toggleLike(post._id, body).enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    if (response.isSuccessful()) {
-                        if (post.likes == null) post.likes = new ArrayList<>();
-                        if (post.dislikes == null) post.dislikes = new ArrayList<>();
 
-                        if (post.likes.contains(currentUserId)) {
-                            post.likes.remove(currentUserId);
-                        } else {
-                            post.likes.add(currentUserId);
-                            post.dislikes.remove(currentUserId); // Bỏ dislike nếu đang like
-                        }
-                        updateInteractionCounts(holder, post);
-                        Toast.makeText(context, "Đã cập nhật Thích", Toast.LENGTH_SHORT).show();
+            // FIX LỖI TẠI ĐÂY: Callback phải khớp với Map<String, Object>
+            RetrofitClient.getApi().toggleLike(post._id, body).enqueue(new Callback<Map<String, Object>>() {
+                @Override
+                public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        // Ép kiểu Double về int để cập nhật UI
+                        int likes = ((Double) response.body().get("likesCount")).intValue();
+                        int dislikes = ((Double) response.body().get("dislikesCount")).intValue();
+
+                        // Cập nhật và nhảy số ngay lập tức
+                        post.likes = new ArrayList<>(Collections.nCopies(likes, ""));
+                        post.dislikes = new ArrayList<>(Collections.nCopies(dislikes, ""));
+                        notifyItemChanged(holder.getAdapterPosition());
                     }
                 }
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {}
+                public void onFailure(Call<Map<String, Object>> call, Throwable t) {}
             });
         });
-
-        // 2. DISLIKE
+        // 2. XỬ LÝ NÚT DISLIKE
         holder.btnDislike.setOnClickListener(v -> {
             if (currentUserId.isEmpty()) return;
             Map<String, String> body = new HashMap<>();
             body.put("userId", currentUserId);
-            
-            RetrofitClient.getApi().toggleDislike(post._id, body).enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    if (response.isSuccessful()) {
-                        if (post.dislikes == null) post.dislikes = new ArrayList<>();
-                        if (post.likes == null) post.likes = new ArrayList<>();
 
-                        if (post.dislikes.contains(currentUserId)) {
-                            post.dislikes.remove(currentUserId);
-                        } else {
-                            post.dislikes.add(currentUserId);
-                            post.likes.remove(currentUserId); // Bỏ like nếu đang dislike
-                        }
-                        updateInteractionCounts(holder, post);
+            // SỬA LỖI TƯƠNG TỰ CHO DISLIKE
+            RetrofitClient.getApi().toggleDislike(post._id, body).enqueue(new Callback<Map<String, Object>>() {
+                @Override
+                public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        int likesCount = ((Double) response.body().get("likesCount")).intValue();
+                        int dislikesCount = ((Double) response.body().get("dislikesCount")).intValue();
+
+                        post.setLikesCount(likesCount);
+                        post.setDislikesCount(dislikesCount);
+                        notifyItemChanged(holder.getAdapterPosition());
                         Toast.makeText(context, "Đã cập nhật Không thích", Toast.LENGTH_SHORT).show();
                     }
                 }
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {}
+                public void onFailure(Call<Map<String, Object>> call, Throwable t) {}
             });
         });
 
@@ -120,15 +115,15 @@ public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.BlogViewHolder
         // 4. REPORT (BÁO CÁO)
         holder.btnReport.setOnClickListener(v -> showReportDialog(post._id, v));
 
-        holder.btnApprove.setOnClickListener(v -> handleAdminAction(post._id, "approved", position, v));
-        holder.btnReject.setOnClickListener(v -> handleAdminAction(post._id, "rejected", position, v));
+        // 5. ADMIN ACTION (DUYỆT/HỦY BÀI)
+        holder.btnApprove.setOnClickListener(v -> handleAdminAction(post._id, "approved", holder.getAdapterPosition(), v));
+        holder.btnReject.setOnClickListener(v -> handleAdminAction(post._id, "rejected", holder.getAdapterPosition(), v));
     }
 
     private void updateInteractionCounts(BlogViewHolder holder, BlogPost post) {
-        int likeCount = post.likes != null ? post.likes.size() : 0;
-        int dislikeCount = post.dislikes != null ? post.dislikes.size() : 0;
-        holder.tvLikeCount.setText(String.valueOf(likeCount));
-        holder.tvDislikeCount.setText(String.valueOf(dislikeCount));
+        // Sử dụng hàm getLikesCount/getDislikesCount để đảm bảo lấy dữ liệu mới nhất
+        holder.tvLikeCount.setText(String.valueOf(post.getLikesCount()));
+        holder.tvDislikeCount.setText(String.valueOf(post.getDislikesCount()));
     }
 
     private void showReportDialog(String questionId, View v) {
@@ -149,9 +144,11 @@ public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.BlogViewHolder
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    list.remove(pos);
-                    notifyItemRemoved(pos);
-                    Toast.makeText(v.getContext(), "Đã xử lý bài viết!", Toast.LENGTH_SHORT).show();
+                    if (pos != RecyclerView.NO_POSITION) {
+                        list.remove(pos);
+                        notifyItemRemoved(pos);
+                        Toast.makeText(v.getContext(), "Đã xử lý bài viết!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
             @Override
