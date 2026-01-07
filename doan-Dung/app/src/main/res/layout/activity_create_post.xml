@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="#FFF9FB">
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Chia sẻ thắc mắc" android:textSize="22sp" android:textStyle="bold" android:textColor="#E84393"/>
+
+    <EditText android:id="@+id/edtPostContent"
+        android:layout_width="match_parent" android:layout_height="200dp"
+        android:hint="Bạn muốn trao đổi điều gì với mọi người?"
+        android:gravity="top" android:padding="15dp"
+        android:background="@drawable/edittext_border" android:layout_marginTop="20dp"
+        android:lineSpacingExtra="4dp"/>
+
+    <Button android:id="@+id/btnPickImage"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="📷 Đính kèm Ảnh/Tài liệu" android:backgroundTint="#81ECEC" android:textColor="#2D3436" android:layout_marginTop="15dp"/>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:weightSum="2" android:layout_marginTop="30dp">
+        <Button android:id="@+id/btnCancelPost" android:layout_width="0dp" android:layout_weight="1"
+            android:text="HỦY" android:backgroundTint="#FAB1A0" android:layout_marginEnd="10dp"/>
+        <Button android:id="@+id/btnSubmitPost" android:layout_width="0dp" android:layout_weight="1"
+            android:text="GỬI DUYỆT" android:backgroundTint="#55E6C1"/>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".AppBlockerActivity">
+
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chọn ứng dụng và thời gian chặn"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edtBlockDuration"
+            android:layout_width="378dp"
+            android:layout_height="57dp"
+            android:hint="Nhập số phút cần chặn (ví dụ: 30)"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/btnActivateService"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Cấp quyền Dịch vụ Chặn (Làm 1 lần duy nhất)" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/appsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btnStartBlocking"
+        android:layout_below="@id/headerLayout" />
+
+    <Button
+        android:id="@+id/btnStartBlocking"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:text="Bắt đầu Tập trung" />
+
+</RelativeLayout>

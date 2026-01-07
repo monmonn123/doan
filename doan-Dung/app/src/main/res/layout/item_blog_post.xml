@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#FFFFFF">
+
+        <TextView
+            android:id="@+id/tvAuthorName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sinh viên ẩn danh"
+            android:textStyle="bold"
+            android:textColor="#6C5CE7"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vừa xong"
+            android:textSize="12sp"
+            android:textColor="#B2BEC3"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tvContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nội dung bài đăng..."
+            android:textColor="#2D3436"
+            android:textSize="15sp"
+            android:layout_marginBottom="10dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardImage"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            app:cardCornerRadius="12dp"
+            android:visibility="gone"
+            android:layout_marginBottom="10dp">
+            <ImageView
+                android:id="@+id/imgPost"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+        </androidx.cardview.widget.CardView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#F1F2F6"
+            android:layout_marginVertical="10dp"/>
+
+        <LinearLayout
+            android:id="@+id/layoutStudentAction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <CheckBox
+                android:id="@+id/cbLike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" Thích"
+                android:button="@android:drawable/btn_star_big_off"
+                android:layout_marginEnd="20dp"/>
+            <TextView
+                android:id="@+id/btnComment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💬 Bình luận"
+                android:textColor="#0984E3"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutAdminAction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="2"
+            android:layout_marginTop="10dp">
+            <Button
+                android:id="@+id/btnReject"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="KHÔNG PHÙ HỢP"
+                android:backgroundTint="#FF7675"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:textSize="11sp"/>
+            <Button
+                android:id="@+id/btnApprove"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="DUYỆT BÀI"
+                android:backgroundTint="#55E6C1"
+                android:layout_weight="1"
+                android:textSize="11sp"/>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

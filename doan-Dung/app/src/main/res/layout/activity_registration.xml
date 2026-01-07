@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegistrationActivity">
+
+    <!-- Video nền tùy chỉnh -->
+    <com.example.doan_mau.CustomVideoView
+        android:id="@+id/videoBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
+    <!-- Nội dung đăng ký -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:background="#B3FFFFFF"> <!-- Nền trắng mờ -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tạo tài khoản MyUTE"
+                android:textColor="#1E293B"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edtFullName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:hint="Họ và Tên"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/edtStudentId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Mã số sinh viên"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/edtEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Email"
+                android:inputType="textEmailAddress" />
+
+            <EditText
+                android:id="@+id/edtPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Mật khẩu"
+                android:inputType="textPassword" />
+
+            <EditText
+                android:id="@+id/edtConfirmPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Nhập lại mật khẩu"
+                android:inputType="textPassword" />
+
+            <Button
+                android:id="@+id/btnRegister"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Đăng ký" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

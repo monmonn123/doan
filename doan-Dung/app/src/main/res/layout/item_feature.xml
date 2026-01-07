@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:background="@drawable/feature_item_background"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="12dp">
+
+    <ImageView
+        android:id="@+id/imgFeatureIcon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@android:drawable/ic_menu_info_details"
+        app:tint="#64748B" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvFeatureName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tên chức năng"
+            android:textColor="#334155"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvFeatureDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chi tiết chức năng"
+            android:textColor="#64748B"
+            android:textSize="12sp" />
+    </LinearLayout>
+</LinearLayout>

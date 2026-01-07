@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EBF8FF"
+    android:padding="32dp">
+
+    <TextView
+        android:id="@+id/tvMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="Bạn đang trong chế độ tập trung. Hãy quay lại học nhé!"
+        android:textColor="#1E293B"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btnClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvMessage"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:text="Tôi hiểu" />
+
+</RelativeLayout>

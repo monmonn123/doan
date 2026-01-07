@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8FAFC"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
+        android:text="Đồng hồ Tập trung"
+        android:textColor="#1E293B"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <FrameLayout
+        android:id="@+id/timerContainer"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:layout_centerInParent="true">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:indeterminate="false"
+            android:max="100"
+            android:progress="100"
+            android:progressDrawable="@drawable/circle_progress" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="#333333"
+                android:textSize="60sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="phút còn lại"
+                android:textSize="14sp"
+                android:textColor="#888888"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <EditText
+        android:id="@+id/edtMinutes"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/timerContainer"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:background="#E2E8F0"
+        android:gravity="center"
+        android:hint="Nhập số phút (VD: 25)"
+        android:inputType="number"
+        android:padding="12dp"
+        android:textColor="#000000" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="32dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bắt đầu"
+            android:paddingHorizontal="32dp"/>
+
+        <Button
+            android:id="@+id/btnStop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:backgroundTint="#EF4444"
+            android:text="Hủy"
+            android:visibility="gone"/> </LinearLayout>
+
+</RelativeLayout>
