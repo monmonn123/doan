@@ -5,7 +5,16 @@ const auth = require('../middleware/auth');
 
 router.use(auth);
 
-router.get('/all', getAllUsers);
-router.put('/update-role', updateRole);
+// Middleware to check admin role
+const requireAdmin = (req, res, next) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ success: false, message: "Yêu cầu quyền admin." });
+    }
+    next();
+};
+
+// All user management routes require admin
+router.get('/all', requireAdmin, getAllUsers);
+router.put('/update-role', requireAdmin, updateRole);
 
 module.exports = router;

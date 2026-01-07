@@ -1,16 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const Message = require('../model/Message');
+const auth = require('../middleware/auth');
+
+// All routes require authentication
+router.use(auth);
 
 // --- ROUTE CHO NGƯỜI DÙNG (USER) ---
 
 // [POST] /api/messages/ -> Gửi tin nhắn mới (Người dùng gửi)
-router.post('/', async (req, res) => {
+router.post('/', async(req, res) => {
     try {
-        const { userId, text } = req.body;
+        const text = req.body.text;
+        const userId = req.user.id; // Use authenticated user's ID
+
         // Kiểm tra dữ liệu đầu vào
         if (!userId || !text) {
-            return res.status(400).json({ message: "UserId và nội dung tin nhắn là bắt buộc." });
+            return res.status(400).json({ message: "Nội dung tin nhắn là bắt buộc." });
         }
         const newMessage = new Message({
             userId,
@@ -25,8 +31,13 @@ router.post('/', async (req, res) => {
 });
 
 // [GET] /api/messages/:userId -> Lấy lịch sử chat của MỘT người dùng
-router.get('/:userId', async (req, res) => {
+router.get('/:userId', async(req, res) => {
     try {
+        // Users can only view their own messages unless they're admin
+        if (req.user.role !== 'admin' && req.user.id !== req.params.userId) {
+            return res.status(403).json({ message: "Bạn không có quyền xem tin nhắn này." });
+        }
+
         const messages = await Message.find({ userId: req.params.userId })
             .populate('userId', 'hoTen mssv avatar') // Lấy thêm thông tin người dùng
             .sort({ createdAt: 'asc' }); // Sắp xếp từ cũ đến mới
@@ -39,8 +50,16 @@ router.get('/:userId', async (req, res) => {
 
 // --- ROUTES CHO QUẢN TRỊ VIÊN (ADMIN) ---
 
+// Middleware to check admin role
+const requireAdmin = (req, res, next) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: "Yêu cầu quyền admin." });
+    }
+    next();
+};
+
 // [GET] /api/messages/admin/conversations -> Lấy danh sách tất cả các cuộc trò chuyện
-router.get('/admin/conversations', async (req, res) => {
+router.get('/admin/conversations', requireAdmin, async(req, res) => {
     try {
         // Sử dụng pipeline của MongoDB để nhóm tin nhắn theo userId
         // và lấy ra tin nhắn cuối cùng của mỗi cuộc trò chuyện
@@ -67,7 +86,7 @@ router.get('/admin/conversations', async (req, res) => {
             },
             // "Mở" mảng userDetails ra
             { $unwind: "$userDetails" },
-             // Sắp xếp các cuộc trò chuyện, cuộc nào mới nhất đưa lên đầu
+            // Sắp xếp các cuộc trò chuyện, cuộc nào mới nhất đưa lên đầu
             { $sort: { lastMessageTime: -1 } },
             // Chọn các trường cần hiển thị
             {
@@ -88,7 +107,7 @@ router.get('/admin/conversations', async (req, res) => {
 });
 
 // [POST] /api/messages/admin/reply -> Admin trả lời tin nhắn của người dùng
-router.post('/admin/reply', async (req, res) => {
+router.post('/admin/reply', requireAdmin, async(req, res) => {
     try {
         // Admin cần gửi userId của người mà họ muốn trả lời
         const { userId, text } = req.body;
