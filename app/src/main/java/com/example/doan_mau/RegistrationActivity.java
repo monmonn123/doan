@@ -7,14 +7,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.VideoView;
-
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.HashMap; // Hết đỏ Map
+import java.util.Map;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RegistrationActivity extends AppCompatActivity {
-
     private EditText edtFullName, edtStudentId, edtEmail, edtPassword, edtConfirmPassword;
     private Button btnRegister;
     private VideoView videoBackground;
@@ -32,7 +34,6 @@ public class RegistrationActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btnRegister);
         videoBackground = findViewById(R.id.videoBackground);
 
-        // Thiết lập video nền
         Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.anh_nen);
         videoBackground.setVideoURI(uri);
         videoBackground.setOnPreparedListener(mp -> {
@@ -42,69 +43,49 @@ public class RegistrationActivity extends AppCompatActivity {
         videoBackground.start();
 
         btnRegister.setOnClickListener(v -> {
-            if (validateInput()) {
-                String fullName = edtFullName.getText().toString().trim();
-                String studentId = edtStudentId.getText().toString().trim();
-                String email = edtEmail.getText().toString().trim();
-                String password = edtPassword.getText().toString();
+            if (validateInput()) performRegistration();
+        });
+    }
 
-                Intent intent = new Intent(RegistrationActivity.this, ConfirmCodeActivity.class);
+    private void performRegistration() {
+        Map<String, String> regData = new HashMap<>();
+        regData.put("hoTen", edtFullName.getText().toString().trim());
+        regData.put("mssv", edtStudentId.getText().toString().trim());
+        regData.put("email", edtEmail.getText().toString().trim());
+        regData.put("password", edtPassword.getText().toString());
 
-                // Đóng gói dữ liệu gửi sang màn hình xác thực
-                intent.putExtra("USER_EMAIL", email);
-                intent.putExtra("USER_PASSWORD", password);
-                intent.putExtra("USER_FULL_NAME", fullName);
-                intent.putExtra("USER_STUDENT_ID", studentId);
-
-                // --- QUAN TRỌNG: Lấy StudentID làm Username gửi cho Server ---
-                intent.putExtra("USER_USERNAME", studentId);
-                // -----------------------------------------------------------
-
-                startActivity(intent);
+        // GỌI ĐĂNG KÝ TRỰC TIẾP (KHÔNG OTP)
+        RetrofitClient.getApi().registerUser(regData).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(RegistrationActivity.this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(RegistrationActivity.this, "Lỗi: MSSV hoặc Email đã tồn tại!", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(RegistrationActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private boolean validateInput() {
-        String fullName = edtFullName.getText().toString().trim();
-        String studentId = edtStudentId.getText().toString().trim();
-        String email = edtEmail.getText().toString().trim();
-        String password = edtPassword.getText().toString();
-        String confirmPassword = edtConfirmPassword.getText().toString();
-
-        if (fullName.isEmpty() || studentId.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+        if (edtFullName.getText().toString().isEmpty() || edtStudentId.getText().toString().isEmpty() ||
+                edtEmail.getText().toString().isEmpty() || edtPassword.getText().toString().isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return false;
         }
-
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "Địa chỉ email không hợp lệ", Toast.LENGTH_SHORT).show();
+        if (!edtPassword.getText().toString().equals(edtConfirmPassword.getText().toString())) {
+            Toast.makeText(this, "Mật khẩu không khớp", Toast.LENGTH_SHORT).show();
             return false;
         }
-
-        if (!password.equals(confirmPassword)) {
-            Toast.makeText(this, "Mật khẩu nhập lại không khớp", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        if (!isPasswordStrong(password)) {
-            Toast.makeText(this, "Mật khẩu phải dài ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_LONG).show();
-            return false;
-        }
-
         return true;
     }
 
-    private boolean isPasswordStrong(String password) {
-        String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
-        Pattern pattern = Pattern.compile(passwordPattern);
-        Matcher matcher = pattern.matcher(password);
-        return matcher.matches();
-    }
-
     @Override
-    protected void onResume() {
-        super.onResume();
-        videoBackground.start();
-    }
+    protected void onResume() { super.onResume(); videoBackground.start(); }
 }

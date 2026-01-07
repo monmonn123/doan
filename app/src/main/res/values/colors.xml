@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Các màu cũ -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#6200EE</color>
     <color name="purple_700">#3700B3</color>
@@ -8,5 +9,16 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="my_dark_primary">#BB86FC</color>
+    <!-- Bảng màu mới theo tone xanh -->
+    <color name="primary_dark">#184785</color>
+    <color name="primary">#1B4F93</color>
+    <color name="primary_light">#205AA7</color>
+    <color name="accent_green">#426EB4</color>
+    <color name="neutral_gray_dark">#7388C1</color>
+    <color name="neutral_gray_medium">#94AAD6</color>
+    <color name="neutral_gray_light">#BFCAE6</color>
+
+    <!-- Màu cho nút từ chối/lỗi -->
+    <color name="error_red">#EF4444</color>
+
 </resources>

@@ -1,126 +1,122 @@
 package com.example.doan_mau;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
+// import com.bumptech.glide.Glide; // Tạm thời chú thích
+import java.util.HashMap;
+import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private CircleImageView imgProfile;
-    private EditText etFullName, etGmail, etPhoneNumber;
-    private Button btnSaveChanges;
-    private FloatingActionButton fabChangeAvatar;
-
-    private Integer[] avatars = {
-            R.drawable.bogo,
-            R.drawable.lion,
-            R.drawable.jult,
-            R.drawable.mrbigrender,
-            R.drawable.nick,
-            R.drawable.images,
-            R.drawable.bellwether,
-            R.drawable.beaver,
-            R.drawable.gary_zootopia_2
-    };
-    private int selectedAvatar;
+    private CircleImageView imgProfileAvatar;
+    private EditText etFullName, etMssv, etEmail;
+    private Button btnUpdateProfile, btnLogout;
+    private BlogApi api;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        imgProfile = findViewById(R.id.imgProfile);
-        etFullName = findViewById(R.id.etFullName);
-        etGmail = findViewById(R.id.etGmail);
-        etPhoneNumber = findViewById(R.id.etPhoneNumber);
-        btnSaveChanges = findViewById(R.id.btnSaveChanges);
-        fabChangeAvatar = findViewById(R.id.fabChangeAvatar);
+        imgProfileAvatar = findViewById(R.id.imgProfileAvatar);
+        etFullName = findViewById(R.id.etProfileFullName);
+        etMssv = findViewById(R.id.etProfileMssv);
+        etEmail = findViewById(R.id.etProfileEmail);
+        btnUpdateProfile = findViewById(R.id.btnUpdateProfile);
+        btnLogout = findViewById(R.id.btnLogout);
 
-        // Email là định danh, không cho phép chỉnh sửa
-        etGmail.setEnabled(false);
+        SharedPreferences prefs = getSharedPreferences("MY_APP_PREFS", MODE_PRIVATE);
+        userId = prefs.getString("USER_ID", "");
+        String token = prefs.getString("USER_TOKEN", "");
+        api = RetrofitClient.getApiWithToken(token);
 
-        loadUserData();
+        loadUserProfile();
 
-        fabChangeAvatar.setOnClickListener(v -> showAvatarPickerDialog());
+        btnUpdateProfile.setOnClickListener(v -> updateUserProfile());
+        btnLogout.setOnClickListener(v -> logout());
+    }
 
-        btnSaveChanges.setOnClickListener(v -> {
-            saveChanges();
+    private void loadUserProfile() {
+        if (userId.isEmpty() || api == null) return;
+
+        api.getUserProfile(userId).enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                if (response.isSuccessful() && response.body() != null && (Boolean) response.body().get("success")) {
+                    Map<String, Object> user = (Map<String, Object>) response.body().get("user");
+                    if (user != null) {
+                        etFullName.setText((String) user.get("hoTen"));
+                        etMssv.setText((String) user.get("mssv"));
+                        etEmail.setText((String) user.get("email"));
+
+                        String avatarPath = (String) user.get("avatar");
+                        // Tạm thời chú thích phần Glide
+                        // if (avatarPath != null && !avatarPath.isEmpty()) {
+                        //     Glide.with(ProfileActivity.this)
+                        //          .load("http://10.0.2.2:4000/" + avatarPath.replace("\\", "/"))
+                        //          .into(imgProfileAvatar);
+                        // }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                Log.e("ProfileActivity", "Lỗi tải thông tin người dùng", t);
+            }
         });
     }
 
-    private void loadUserData() {
-        SharedPreferences currentUserPrefs = getSharedPreferences("CURRENT_USER", MODE_PRIVATE);
-        String email = currentUserPrefs.getString("email", null);
+    private void updateUserProfile() {
+        String hoTen = etFullName.getText().toString();
+        String mssv = etMssv.getText().toString();
+        String email = etEmail.getText().toString();
 
-        if (email != null) {
-            SharedPreferences userAccountsPrefs = getSharedPreferences("USER_ACCOUNTS", MODE_PRIVATE);
+        Map<String, String> body = new HashMap<>();
+        body.put("hoTen", hoTen);
+        body.put("mssv", mssv);
+        body.put("email", email);
 
-            String fullName = userAccountsPrefs.getString(email + "_fullName", "Không có tên");
-            String phoneNumber = userAccountsPrefs.getString(email + "_phoneNumber", ""); // Tải SĐT
-            selectedAvatar = userAccountsPrefs.getInt(email + "_avatar", R.drawable.bogo); // Tải avatar
+        api.updateUserProfile(userId, body).enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                if (response.isSuccessful() && response.body() != null && (Boolean) response.body().get("success")) {
+                    Toast.makeText(ProfileActivity.this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
+                    // Cập nhật lại thông tin trong SharedPreferences
+                    SharedPreferences.Editor editor = getSharedPreferences("MY_APP_PREFS", MODE_PRIVATE).edit();
+                    editor.putString("FULL_NAME", hoTen);
+                    editor.putString("USER_MSSV", mssv);
+                    editor.putString("USER_EMAIL", email);
+                    editor.apply();
+                } else {
+                    Toast.makeText(ProfileActivity.this, "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
 
-            etFullName.setText(fullName);
-            etGmail.setText(email);
-            etPhoneNumber.setText(phoneNumber);
-            imgProfile.setImageResource(selectedAvatar);
-
-        } else {
-            Toast.makeText(this, "Lỗi: Không tìm thấy thông tin người dùng.", Toast.LENGTH_LONG).show();
-            finish(); // Quay lại nếu không có người dùng
-        }
-    }
-
-    private void showAvatarPickerDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Chọn ảnh đại diện");
-
-        View view = getLayoutInflater().inflate(R.layout.dialog_avatar_picker, null);
-        GridView gridView = view.findViewById(R.id.gvAvatars);
-        AvatarAdapter adapter = new AvatarAdapter(this, avatars);
-        gridView.setAdapter(adapter);
-
-        builder.setView(view);
-        AlertDialog dialog = builder.create();
-
-        gridView.setOnItemClickListener((parent, view1, position, id) -> {
-            selectedAvatar = avatars[position];
-            imgProfile.setImageResource(selectedAvatar);
-            dialog.dismiss();
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                Toast.makeText(ProfileActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+            }
         });
-
-        dialog.show();
     }
 
-    private void saveChanges() {
-        SharedPreferences currentUserPrefs = getSharedPreferences("CURRENT_USER", MODE_PRIVATE);
-        String email = currentUserPrefs.getString("email", null);
-
-        if (email != null) {
-            SharedPreferences userAccountsPrefs = getSharedPreferences("USER_ACCOUNTS", MODE_PRIVATE);
-            SharedPreferences.Editor editor = userAccountsPrefs.edit();
-
-            String newFullName = etFullName.getText().toString();
-            String newPhoneNumber = etPhoneNumber.getText().toString();
-
-            editor.putString(email + "_fullName", newFullName);
-            editor.putString(email + "_phoneNumber", newPhoneNumber);
-            editor.putInt(email + "_avatar", selectedAvatar);
-            editor.apply();
-
-            Toast.makeText(this, "Đã lưu thay đổi!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Lỗi: Không thể lưu thay đổi.", Toast.LENGTH_SHORT).show();
-        }
+    private void logout() {
+        SharedPreferences prefs = getSharedPreferences("MY_APP_PREFS", MODE_PRIVATE);
+        prefs.edit().clear().apply();
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 }

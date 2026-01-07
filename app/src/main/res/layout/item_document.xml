@@ -49,9 +49,18 @@
         <Button
             android:id="@+id/btnViewFile"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:text="Xem"
             android:textSize="12sp"
             android:backgroundTint="#3498DB" />
+
+        <ImageButton
+            android:id="@+id/btnDeleteDoc"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_delete"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginStart="8dp"/>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

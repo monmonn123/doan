@@ -1,6 +1,7 @@
 package com.example.doan_mau;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
@@ -64,21 +65,19 @@ public class UploadActivity extends AppCompatActivity {
             return;
         }
 
+        // Lấy tên người dùng từ SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("MY_APP_PREFS", MODE_PRIVATE);
+        String uploaderName = prefs.getString("FULL_NAME", "Người dùng ẩn danh");
+
         try {
-            // Chuyển Uri thành File thực tế để upload
             File file = uriToFile(selectedFileUri);
             RequestBody requestFile = RequestBody.create(MediaType.parse(getContentResolver().getType(selectedFileUri)), file);
             MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
             RequestBody title = RequestBody.create(MultipartBody.FORM, edtTitle.getText().toString());
-            RequestBody uploader = RequestBody.create(MultipartBody.FORM, "Dung Sinh Viên");
+            RequestBody uploader = RequestBody.create(MultipartBody.FORM, uploaderName);
 
-            // CẤU HÌNH IP SERVER: Thay bằng IP máy tính của Dung hoặc 10.0.2.2 cho máy ảo
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://10.0.2.2:4000/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            ApiService apiService = retrofit.create(ApiService.class);
+            // Sử dụng RetrofitClient đã được cấu hình sẵn
+            BlogApi apiService = RetrofitClient.getApiWithToken(prefs.getString("USER_TOKEN", ""));
             apiService.uploadFile(title, uploader, body).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
@@ -86,6 +85,8 @@ public class UploadActivity extends AppCompatActivity {
                         Toast.makeText(UploadActivity.this, "Upload thành công!", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(UploadActivity.this, DocumentListActivity.class));
                         finish();
+                    } else {
+                        Toast.makeText(UploadActivity.this, "Upload thất bại, code: " + response.code(), Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -97,7 +98,6 @@ public class UploadActivity extends AppCompatActivity {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    // Hàm phụ trợ để xử lý file từ bộ nhớ điện thoại
     private File uriToFile(Uri uri) throws Exception {
         InputStream is = getContentResolver().openInputStream(uri);
         File tempFile = new File(getCacheDir(), "temp_file");

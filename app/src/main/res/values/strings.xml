@@ -1,13 +1,4 @@
 <resources>
-    <string name="app_name">MyUTE</string>
-    <string name="accessibility_service_description">Dịch vụ này giúp MyUTE có thể phát hiện và chặn các ứng dụng gây mất tập trung khi bạn bật chế độ Focus.</string>
-    <string-array name="days_of_week">
-        <item>Thứ Hai</item>
-        <item>Thứ Ba</item>
-        <item>Thứ Tư</item>
-        <item>Thứ Năm</item>
-        <item>Thứ Sáu</item>
-        <item>Thứ Bảy</item>
-        <item>Chủ Nhật</item>
-    </string-array>
+    <string name="app_name">doan_mau</string>
+    <string name="accessibility_description">Dịch vụ này dùng để phát hiện và chặn các ứng dụng bạn đã chọn trong chế độ tập trung.</string>
 </resources>

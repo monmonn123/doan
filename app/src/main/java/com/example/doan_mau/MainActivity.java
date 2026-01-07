@@ -1,14 +1,13 @@
 package com.example.doan_mau;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,20 +27,42 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
+        // Hiển thị thông tin thực tế từ Database
+        displayUserInfo();
+
         // Hiển thị danh sách chức năng
         setupFunctionList();
 
         // Xử lý Bottom Navigation
         if (bottomNavigationView != null) {
+            bottomNavigationView.setSelectedItemId(R.id.nav_home);
             bottomNavigationView.setOnItemSelectedListener(item -> {
                 int itemId = item.getItemId();
-                if (itemId == R.id.nav_profile) {
+                if (itemId == R.id.nav_home) {
+                    return true;
+                } else if (itemId == R.id.nav_support) {
+                    startActivity(new Intent(MainActivity.this, SupportActivity.class));
+                    return true;
+                } else if (itemId == R.id.nav_notifications) {
+                    // Sửa ở đây: Mở UserNotificationActivity
+                    startActivity(new Intent(MainActivity.this, UserNotificationActivity.class));
+                    return true;
+                } else if (itemId == R.id.nav_profile) {
                     startActivity(new Intent(MainActivity.this, ProfileActivity.class));
                     return true;
                 }
                 return false;
             });
         }
+    }
+
+    private void displayUserInfo() {
+        SharedPreferences prefs = getSharedPreferences("MY_APP_PREFS", MODE_PRIVATE);
+        String fullName = prefs.getString("FULL_NAME", "Sinh viên");
+        String mssv = prefs.getString("USER_MSSV", "Chưa cập nhật");
+
+        tvWelcomeName.setText("Xin chào, " + fullName);
+        tvMssvInfo.setText("MSSV: " + mssv);
     }
 
     private void setupFunctionList() {

@@ -3,20 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F0F4F8"> <TextView
-    android:id="@+id/tvHeader"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Cộng Đồng Học Tập"
-    android:textSize="22sp"
-    android:textStyle="bold"
-    android:gravity="center"
-    android:padding="16dp"
-    android:textColor="#2D3436"
-    android:background="#FFFFFF"/>
+    android:background="#F0F4F8">
+
+    <TextView
+        android:id="@+id/tvHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cộng Đồng Học Tập"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="16dp"
+        android:textColor="#2D3436"
+        android:background="#FFFFFF"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvBlog"
+        android:id="@+id/blogRecyclerView" 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/tvHeader"
