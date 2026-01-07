@@ -9,6 +9,7 @@ const Question = require('./model/Question');
 const authRoutes = require('./routes/auth');
 const aiChatRoutes = require('./routes/aiChat');
 const messageRoutes = require('./routes/message');
+const userRoutes = require('./routes/user'); // THÊM DÒNG NÀY
 
 const app = express();
 
@@ -28,6 +29,7 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/befinalproj
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', aiChatRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/users', userRoutes); // ĐĂNG KÝ ROUTE QUẢN LÝ NGƯỜI DÙNG TẠI ĐÂY
 
 app.post('/api/questions/post', upload.fields([{ name: 'image' }, { name: 'file' }]), async (req, res) => {
     try {

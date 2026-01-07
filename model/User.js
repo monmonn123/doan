@@ -25,10 +25,10 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin'],
+        enum: ['user', 'manager', 'admin'],
         default: 'user'
     },
-    isActive: { // Thêm trường này để tránh lỗi 401
+    isActive: { 
         type: Boolean,
         default: true
     },

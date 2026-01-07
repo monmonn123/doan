@@ -35,10 +35,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Xử lý Bottom Navigation
         if (bottomNavigationView != null) {
+            bottomNavigationView.setSelectedItemId(R.id.nav_home);
             bottomNavigationView.setOnItemSelectedListener(item -> {
                 int itemId = item.getItemId();
-                if (itemId == R.id.nav_support) {
+                if (itemId == R.id.nav_home) {
+                    return true;
+                } else if (itemId == R.id.nav_support) {
                     startActivity(new Intent(MainActivity.this, SupportActivity.class));
+                    return true;
+                } else if (itemId == R.id.nav_notifications) {
+                    startActivity(new Intent(MainActivity.this, NotificationActivity.class));
                     return true;
                 } else if (itemId == R.id.nav_profile) {
                     startActivity(new Intent(MainActivity.this, ProfileActivity.class));

@@ -19,7 +19,6 @@ public class AdminActivity extends AppCompatActivity {
 
         bottomNavigationView = findViewById(R.id.adminBottomNavigationView);
 
-        // Mặc định tải trang Hỗ trợ (giống user với 2 tab)
         if (savedInstanceState == null) {
             loadFragment(new SupportFragment());
             bottomNavigationView.setSelectedItemId(R.id.nav_admin_qa);
@@ -28,17 +27,16 @@ public class AdminActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_admin_home) {
-                // Trang chủ Admin
+                // Có thể thêm AdminHomeFragment sau
                 return true;
             } else if (itemId == R.id.nav_admin_qa) {
-                loadFragment(new SupportFragment()); // Mục này giờ hiện SupportFragment (Hỏi đáp + Nhắn tin)
+                loadFragment(new SupportFragment());
                 return true;
             } else if (itemId == R.id.nav_admin_notifications) {
-                // Hiển thị Notification Activity hoặc Fragment
-                startActivity(new Intent(this, NotificationActivity.class));
+                loadFragment(new NotificationFragment()); // Dùng Fragment để tránh văng app
                 return true;
             } else if (itemId == R.id.nav_admin_profile) {
-                logout();
+                loadFragment(new AdminUserFragment()); // MỤC 4: QUẢN LÝ USER
                 return true;
             }
             return false;
@@ -50,12 +48,5 @@ public class AdminActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.admin_fragment_container, fragment)
                 .commit();
-    }
-
-    private void logout() {
-        SharedPreferences prefs = getSharedPreferences("MY_APP_PREFS", MODE_PRIVATE);
-        prefs.edit().clear().apply();
-        startActivity(new Intent(AdminActivity.this, LoginActivity.class));
-        finish();
     }
 }

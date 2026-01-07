@@ -3,7 +3,7 @@ const { verifyToken } = require('../config/auth');
 const User = require('../model/User');
 
 const auth = async(req, res, next) => {
-    console.log('--- AUTH CHECKING ---'); // Thêm dòng này để bạn kiểm tra server đã nhận code mới chưa
+    console.log('--- AUTH CHECKING ---');
     try {
         const authHeader = req.header('Authorization');
 
@@ -19,16 +19,25 @@ const auth = async(req, res, next) => {
             authHeader;
 
         const decoded = verifyToken(token);
+        
+        // KIỂM TRA NẾU LÀ ADMIN CỐ ĐỊNH
+        if (decoded.userId === "000000000000000000000001") {
+            req.user = {
+                id: "000000000000000000000001",
+                hoTen: "Quản trị viên",
+                role: "admin"
+            };
+            return next();
+        }
+
         const user = await User.findById(decoded.userId).select('-password');
 
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: 'Token không hợp lệ'
+                message: 'Token không hợp lệ - User không tồn tại'
             });
         }
-
-        // ĐÃ XÓA HOÀN TOÀN ĐOẠN KIỂM TRA isActive TẠI ĐÂY
 
         req.user = {
             id: user._id,

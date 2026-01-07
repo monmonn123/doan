@@ -40,6 +40,7 @@
         <activity android:name=".AdminActivity" />
         <activity android:name=".NotificationActivity" />
         <activity android:name=".CommentsActivity" />
+        <activity android:name=".ProfileActivity" />
 
         <receiver android:name=".AlarmReceiver" android:exported="false" />
 

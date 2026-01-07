@@ -60,4 +60,11 @@ public interface BlogApi {
 
     @GET("api/messages/conversations/{userId}")
     Call<Map<String, Object>> getConversationList(@Path("userId") String userId);
+
+    // --- USER MANAGEMENT (MỚI) ---
+    @GET("api/users/all")
+    Call<Map<String, Object>> getAllUsers();
+
+    @PUT("api/users/update-role")
+    Call<Map<String, Object>> updateUserRole(@Body Map<String, String> body);
 }

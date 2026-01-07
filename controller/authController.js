@@ -22,10 +22,12 @@ const login = async(req, res) => {
         const { mssv, password } = req.body;
 
         // KIỂM TRA TÀI KHOẢN ADMIN CỐ ĐỊNH
+        // Sử dụng một chuỗi 24 ký tự hex hợp lệ cho ObjectId
         if (mssv === 'admin' && password === 'admin') {
+            const adminId = "000000000000000000000001"; 
             return res.json({
-                token: generateToken('admin_id_fixed'),
-                user: { id: 'admin_id_fixed', hoTen: 'Quản trị viên', role: 'admin' }
+                token: generateToken(adminId),
+                user: { id: adminId, hoTen: 'Quản trị viên', role: 'admin' }
             });
         }
 
@@ -37,7 +39,7 @@ const login = async(req, res) => {
         const token = generateToken(user._id);
         res.json({
             token,
-            user: { id: user._id, hoTen: user.hoTen, role: user.role }
+            user: { id: user._id, hoTen: user.hoTen, role: user.role, mssv: user.mssv }
         });
     } catch (error) {
         res.status(500).json({ message: 'Lỗi server' });
