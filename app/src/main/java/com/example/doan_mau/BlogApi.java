@@ -95,4 +95,17 @@ public interface BlogApi {
 
     @PUT("api/users/update-role")
     Call<Map<String, Object>> updateUserRole(@Body Map<String, String> body);
+
+    // --- 5. USER PROFILE & REPORTS ---
+    @GET("api/reports/profile/{userId}")
+    Call<Map<String, Object>> getUserProfile(@Path("userId") String userId);
+
+    @POST("api/reports/create")
+    Call<Map<String, Object>> createReport(@Body Map<String, String> body);
+
+    @GET("api/reports/my-reports")
+    Call<List<ReportModel>> getMyReports();
+
+    @GET("api/reports/reasons")
+    Call<List<ReportReason>> getReportReasons();
 }

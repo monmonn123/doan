@@ -9,7 +9,8 @@ const Question = require('./model/Question');
 const authRoutes = require('./routes/auth');
 const aiChatRoutes = require('./routes/aiChat');
 const messageRoutes = require('./routes/message');
-const userRoutes = require('./routes/user'); // THÊM DÒNG NÀY
+const userRoutes = require('./routes/user');
+const reportRoutes = require('./routes/report');
 
 const app = express();
 
@@ -29,9 +30,10 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/befinalproj
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', aiChatRoutes);
 app.use('/api/messages', messageRoutes);
-app.use('/api/users', userRoutes); // ĐĂNG KÝ ROUTE QUẢN LÝ NGƯỜI DÙNG TẠI ĐÂY
+app.use('/api/users', userRoutes);
+app.use('/api/reports', reportRoutes);
 
-app.post('/api/questions/post', upload.fields([{ name: 'image' }, { name: 'file' }]), async (req, res) => {
+app.post('/api/questions/post', upload.fields([{ name: 'image' }, { name: 'file' }]), async(req, res) => {
     try {
         const newQuestion = new Question({
             userId: req.body.userId,
@@ -46,7 +48,7 @@ app.post('/api/questions/post', upload.fields([{ name: 'image' }, { name: 'file'
     }
 });
 
-app.get('/api/questions/pending', async (req, res) => {
+app.get('/api/questions/pending', async(req, res) => {
     try {
         const pendingPosts = await Question.find({ status: 'pending' })
             .populate('userId', 'mssv hoTen')
@@ -57,7 +59,7 @@ app.get('/api/questions/pending', async (req, res) => {
     }
 });
 
-app.put('/api/questions/approve/:id', async (req, res) => {
+app.put('/api/questions/approve/:id', async(req, res) => {
     const { action, message } = req.body;
     try {
         await Question.findByIdAndUpdate(req.params.id, {
@@ -70,7 +72,7 @@ app.put('/api/questions/approve/:id', async (req, res) => {
     }
 });
 
-app.get('/api/questions/public', async (req, res) => {
+app.get('/api/questions/public', async(req, res) => {
     try {
         const publicPosts = await Question.find({ status: 'approved' })
             .populate('userId', 'mssv hoTen')
@@ -82,7 +84,7 @@ app.get('/api/questions/public', async (req, res) => {
     }
 });
 
-app.post('/api/questions/comment/:id', async (req, res) => {
+app.post('/api/questions/comment/:id', async(req, res) => {
     try {
         const { userId, text } = req.body;
         const question = await Question.findById(req.params.id);
@@ -96,7 +98,7 @@ app.post('/api/questions/comment/:id', async (req, res) => {
 });
 
 // --- LOGIC LIKE KIỂU FACEBOOK ---
-app.put('/api/questions/like/:id', async (req, res) => {
+app.put('/api/questions/like/:id', async(req, res) => {
     try {
         const { userId } = req.body;
         const question = await Question.findById(req.params.id);
@@ -124,7 +126,7 @@ app.put('/api/questions/like/:id', async (req, res) => {
 });
 
 // --- LOGIC DISLIKE TƯƠNG TỰ ---
-app.put('/api/questions/dislike/:id', async (req, res) => {
+app.put('/api/questions/dislike/:id', async(req, res) => {
     try {
         const { userId } = req.body;
         const question = await Question.findById(req.params.id);
@@ -144,7 +146,7 @@ app.put('/api/questions/dislike/:id', async (req, res) => {
 });
 
 // server.js
-app.put('/api/users/update-profile/:id', upload.single('avatar'), async (req, res) => {
+app.put('/api/users/update-profile/:id', upload.single('avatar'), async(req, res) => {
     try {
         // Nhận tất cả thông tin từ body gửi lên
         const { hoTen, email, mssv } = req.body;
@@ -157,8 +159,7 @@ app.put('/api/users/update-profile/:id', upload.single('avatar'), async (req, re
 
         const updatedUser = await User.findByIdAndUpdate(
             req.params.id,
-            updateFields,
-            { new: true } // Trả về bản ghi đã cập nhật
+            updateFields, { new: true } // Trả về bản ghi đã cập nhật
         ).select('-password');
 
         res.json({ success: true, user: updatedUser });
@@ -167,10 +168,10 @@ app.put('/api/users/update-profile/:id', upload.single('avatar'), async (req, re
     }
 });
 
-    // Lấy cổng từ file .env hoặc mặc định là 4000
-    const PORT = process.env.PORT || 4000;
+// Lấy cổng từ file .env hoặc mặc định là 4000
+const PORT = process.env.PORT || 4000;
 
-    // Bắt đầu lắng nghe các kết nối
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
+// Bắt đầu lắng nghe các kết nối
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

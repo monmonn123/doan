@@ -115,7 +115,25 @@ public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.BlogViewHolder
         // 4. REPORT (BÁO CÁO)
         holder.btnReport.setOnClickListener(v -> showReportDialog(post._id, v));
 
-        // 5. ADMIN ACTION (DUYỆT/HỦY BÀI)
+        // 5. CLICK ON AUTHOR TO VIEW PROFILE
+        holder.tvAuthor.setOnClickListener(v -> {
+            if (post.userId != null && post.userId._id != null) {
+                Intent intent = new Intent(context, UserProfileActivity.class);
+                intent.putExtra("USER_ID", post.userId._id);
+                context.startActivity(intent);
+            }
+        });
+
+        holder.tvAuthor.setOnLongClickListener(v -> {
+            if (post.userId != null && post.userId._id != null) {
+                Intent intent = new Intent(context, UserProfileActivity.class);
+                intent.putExtra("USER_ID", post.userId._id);
+                context.startActivity(intent);
+            }
+            return true;
+        });
+
+        // 6. ADMIN ACTION (DUYỆT/HỦY BÀI)
         holder.btnApprove.setOnClickListener(v -> handleAdminAction(post._id, "approved", holder.getAdapterPosition(), v));
         holder.btnReject.setOnClickListener(v -> handleAdminAction(post._id, "rejected", holder.getAdapterPosition(), v));
     }

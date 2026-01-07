@@ -28,13 +28,17 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'manager', 'admin'],
         default: 'user'
     },
-    isActive: { 
+    isActive: {
         type: Boolean,
         default: true
     },
     avatar: {
         type: String,
         default: ""
+    },
+    reportCount: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true
